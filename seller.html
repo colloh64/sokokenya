@@ -1,0 +1,2566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReSell Kenya - Seller Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #1a5f2a;
+            --primary-light: #2d8a3e;
+            --secondary: #f4a261;
+            --accent: #e76f51;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+            --radius: 8px;
+            --transition: all 0.3s ease;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .hidden { display: none !important; }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 20px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            gap: 6px;
+        }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-light); transform: translateY(-2px); }
+        .btn-secondary { background: var(--secondary); color: var(--dark); }
+        .btn-danger { background: var(--accent); color: white; }
+        .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary); color: white; }
+        .btn-sm { padding: 6px 12px; font-size: 11px; }
+        .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        
+        /* Form Elements */
+        .form-group { margin-bottom: 16px; }
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: var(--dark);
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid var(--border);
+            border-radius: var(--radius);
+            font-size: 13px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+        .form-textarea { resize: vertical; min-height: 80px; }
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        @media (max-width: 480px) { .form-row { grid-template-columns: 1fr; } }
+        
+        /* Cards */
+        .card {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            box-shadow: var(--shadow);
+        }
+        
+        /* ================= REGISTRATION PAGE ================= */
+        .auth-page {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .auth-container {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-hover);
+            overflow: hidden;
+        }
+        .auth-header {
+            background: var(--primary);
+            color: white;
+            padding: 24px;
+            text-align: center;
+        }
+        .auth-header h1 { font-size: 20px; margin-bottom: 4px; }
+        .auth-header p { font-size: 13px; opacity: 0.9; }
+        .auth-body { padding: 24px; }
+        .auth-footer {
+            text-align: center;
+            padding: 16px;
+            font-size: 13px;
+            color: var(--gray);
+            border-top: 1px solid var(--border);
+        }
+        .auth-footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
+        .error-message { color: var(--accent); font-size: 12px; margin-top: 4px; display: none; }
+        .success-message { color: var(--primary); font-size: 12px; margin-top: 4px; display: none; }
+        
+        /* ================= DASHBOARD LAYOUT ================= */
+        .dashboard { display: none; }
+        .dashboard.active { display: block; }
+        
+        .dash-header {
+            background: var(--primary);
+            color: white;
+            padding: 16px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .dash-header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .dash-logo { font-size: 18px; font-weight: 700; }
+        .dash-user {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+        }
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+        .status-active { background: #d4edda; color: #155724; }
+        .status-pending { background: #fff3cd; color: #856404; }
+        .status-suspended { background: #f8d7da; color: #721c24; }
+        
+        .dash-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 16px;
+        }
+        
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        @media (min-width: 768px) { .stats-grid { grid-template-columns: repeat(4, 1fr); } }
+        .stat-card {
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+        .stat-label { font-size: 11px; color: var(--gray); margin-bottom: 4px; }
+        .stat-value { font-size: 20px; font-weight: 700; color: var(--dark); }
+        .stat-sublabel { font-size: 10px; color: var(--gray); margin-top: 4px; }
+        
+        /* Dashboard Grid */
+        .dash-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+        @media (min-width: 1024px) { .dash-grid { grid-template-columns: 250px 1fr; } }
+        
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: white;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 13px;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: left;
+        }
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        /* Main Content */
+        .main-content {
+            background: white;
+            border-radius: var(--radius);
+            padding: 20px;
+            min-height: 500px;
+        }
+        .section-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        
+        /* Suspension Notice */
+        .suspension-notice {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+        .suspension-notice h3 { margin-bottom: 8px; }
+        .suspension-reason {
+            background: white;
+            padding: 12px;
+            border-radius: var(--radius);
+            margin: 12px 0;
+            font-size: 13px;
+        }
+        
+        /* Upload Tracker */
+        .upload-tracker {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+        .tracker-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .progress-bar {
+            height: 8px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.3s;
+        }
+        .upgrade-prompt {
+            background: #fff3cd;
+            padding: 12px;
+            border-radius: var(--radius);
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        
+        /* Products Grid */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        @media (min-width: 768px) { .products-grid { grid-template-columns: repeat(3, 1fr); } }
+        @media (min-width: 1024px) { .products-grid { grid-template-columns: repeat(4, 1fr); } }
+        
+        .product-card {
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            position: relative;
+        }
+        .product-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--accent);
+            color: white;
+            font-size: 9px;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+        .product-badge.verified { background: var(--primary); }
+        .product-badge.boosted {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            left: auto;
+            background: var(--secondary);
+            color: var(--dark);
+        }
+        .product-image {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+        }
+        .product-info { padding: 12px; }
+        .product-name {
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .product-price {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 13px;
+        }
+        .product-meta {
+            font-size: 10px;
+            color: var(--gray);
+            margin-top: 4px;
+        }
+        .product-actions {
+            display: flex;
+            gap: 6px;
+            padding: 8px;
+            border-top: 1px solid var(--border);
+        }
+        
+        /* Subscription Card */
+        .subscription-card {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+        }
+        .sub-plan { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
+        .sub-price { font-size: 14px; opacity: 0.9; margin-bottom: 12px; }
+        .sub-features {
+            font-size: 12px;
+            line-height: 1.6;
+            margin-bottom: 16px;
+        }
+        .sub-actions { display: flex; gap: 8px; }
+        .btn-white {
+            background: white;
+            color: var(--primary);
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+        .btn-outline-white {
+            background: transparent;
+            color: white;
+            padding: 8px 16px;
+            border: 1px solid white;
+            border-radius: var(--radius);
+            font-size: 12px;
+            cursor: pointer;
+        }
+        
+        /* Plan Options */
+        .plan-options {
+            display: grid;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .plan-card {
+            border: 2px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .plan-card:hover, .plan-card.selected {
+            border-color: var(--primary);
+        }
+        .plan-card.popular {
+            border-color: var(--secondary);
+            position: relative;
+        }
+        .popular-tag {
+            position: absolute;
+            top: -10px;
+            right: 10px;
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 10px;
+            font-weight: 700;
+        }
+        .plan-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .plan-name { font-weight: 700; }
+        .plan-amount { color: var(--primary); font-weight: 700; }
+        
+        /* Boost Section */
+        .boost-grid {
+            display: grid;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .boost-card {
+            border: 2px solid var(--border);
+            padding: 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .boost-card:hover { border-color: var(--primary); }
+        .boost-card.selected { border-color: var(--secondary); background: #fff9f0; }
+        .boost-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .boost-title { font-weight: 700; }
+        .boost-price { color: var(--primary); font-weight: 700; }
+        .reach-bar {
+            background: var(--light);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        .reach-fill {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+        }
+        
+        /* Inbox */
+        .inbox-list { display: flex; flex-direction: column; gap: 12px; }
+        .inbox-item {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            border-left: 4px solid var(--primary);
+        }
+        .inbox-item.unread {
+            border-left-color: var(--accent);
+            background: white;
+            box-shadow: var(--shadow);
+        }
+        .inbox-sender { font-size: 12px; font-weight: 600; color: var(--primary); margin-bottom: 4px; }
+        .inbox-subject { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+        .inbox-preview { font-size: 12px; color: var(--gray); }
+        .inbox-time { font-size: 10px; color: var(--gray); margin-top: 8px; }
+        
+        /* Analytics */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .analytic-card {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+        }
+        .analytic-number { font-size: 24px; font-weight: 700; color: var(--primary); }
+        .analytic-label { font-size: 11px; color: var(--gray); }
+        
+        /* Chart */
+        .chart-container {
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--radius);
+            height: 200px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-around;
+            gap: 8px;
+        }
+        .chart-bar {
+            flex: 1;
+            background: var(--primary);
+            border-radius: 4px 4px 0 0;
+            min-height: 20px;
+            position: relative;
+            transition: var(--transition);
+        }
+        .chart-bar:hover { opacity: 0.8; }
+        .chart-label {
+            position: absolute;
+            bottom: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 10px;
+            white-space: nowrap;
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--gray);
+        }
+        .empty-icon { font-size: 48px; margin-bottom: 12px; }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+        }
+        .modal-overlay.active { display: flex; }
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-body { padding: 20px; }
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--gray);
+        }
+        
+        /* Verification Section */
+        .benefits-list {
+            list-style: none;
+            font-size: 13px;
+            margin-bottom: 20px;
+        }
+        .benefits-list li {
+            padding: 8px 0;
+            padding-left: 28px;
+            position: relative;
+        }
+        .benefits-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: 700;
+            width: 20px;
+            height: 20px;
+            background: #d4edda;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+        
+        /* File Upload */
+        .file-upload {
+            border: 2px dashed var(--border);
+            padding: 20px;
+            text-align: center;
+            border-radius: var(--radius);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .file-upload:hover { border-color: var(--primary); }
+        
+        /* Quick Float */
+        .quick-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 99;
+        }
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-hover);
+            transition: var(--transition);
+        }
+        .float-btn:hover { transform: scale(1.1); }
+        
+        /* Compare Bar */
+        .compare-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            padding: 12px;
+            transform: translateY(100%);
+            transition: var(--transition);
+            z-index: 98;
+        }
+        .compare-bar.active { transform: translateY(0); }
+        
+        /* Notification */
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: var(--radius);
+            font-size: 14px;
+            z-index: 9999;
+            opacity: 0;
+            transition: var(--transition);
+            box-shadow: var(--shadow-hover);
+        }
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .notification.success { background: var(--primary); }
+        .notification.error { background: var(--accent); }
+        
+        /* Payment Section */
+        .payment-section {
+            background: var(--light);
+            padding: 16px;
+            border-radius: var(--radius);
+            margin-top: 16px;
+        }
+        .payment-link {
+            display: block;
+            background: white;
+            padding: 16px;
+            border-radius: var(--radius);
+            text-align: center;
+            text-decoration: none;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 12px;
+            border: 2px solid var(--primary);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+<!-- ================= REGISTRATION PAGE ================= -->
+<div id="registrationPage" class="auth-page">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>🏪 Become a Seller</h1>
+            <p>Join Kenya's trusted marketplace</p>
+        </div>
+        
+        <div class="auth-body">
+            <form id="registrationForm">
+                <div class="form-group">
+                    <label class="form-label">Full Name *</label>
+                    <input type="text" class="form-input" id="regName" required placeholder="Enter your full name">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Email *</label>
+                        <input type="email" class="form-input" id="regEmail" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-input" id="regPhone" required placeholder="0712345678">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">County *</label>
+                    <select class="form-select" id="regCounty" required onchange="loadConstituencies('reg')">
+                        <option value="">Select County</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Constituency *</label>
+                    <select class="form-select" id="regConstituency" required onchange="loadWards('reg')" disabled>
+                        <option value="">Select Constituency</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Ward *</label>
+                    <select class="form-select" id="regWard" required disabled>
+                        <option value="">Select Ward</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Exact Location (Street/Building) *</label>
+                    <input type="text" class="form-input" id="regLocation" required placeholder="e.g., Tom Mboya Street, Jamia Plaza 2nd Floor">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Name (Optional)</label>
+                    <input type="text" class="form-input" id="regBusiness" placeholder="Your business name">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Business Description</label>
+                    <textarea class="form-textarea" id="regDescription" placeholder="Describe what you sell..."></textarea>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Password *</label>
+                        <input type="password" class="form-input" id="regPassword" required placeholder="Min 8 characters" minlength="8">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Confirm Password *</label>
+                        <input type="password" class="form-input" id="regConfirm" required placeholder="Repeat password">
+                    </div>
+                </div>
+                <div class="error-message" id="passwordError">Passwords do not match</div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;" id="regBtn">
+                    Create Seller Account
+                </button>
+            </form>
+        </div>
+        
+        <div class="auth-footer">
+            Already have an account? <a href="#" onclick="showLogin(); return false;">Login here</a>
+        </div>
+    </div>
+</div>
+
+<!-- ================= LOGIN PAGE ================= -->
+<div id="loginPage" class="auth-page hidden">
+    <div class="auth-container">
+        <div class="auth-header">
+            <h1>🔐 Seller Login</h1>
+            <p>Access your dashboard</p>
+        </div>
+        
+        <div class="auth-body">
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Email *</label>
+                    <input type="email" class="form-input" id="loginEmail" required placeholder="your@email.com">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password *</label>
+                    <input type="password" class="form-input" id="loginPassword" required placeholder="Enter your password">
+                </div>
+
+                <div class="error-message" id="loginError">Invalid email or password</div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    Login to Dashboard
+                </button>
+            </form>
+        </div>
+        
+        <div class="auth-footer">
+            Don't have an account? <a href="#" onclick="showRegistration(); return false;">Register here</a>
+        </div>
+    </div>
+</div>
+
+<!-- ================= DASHBOARD ================= -->
+<div id="dashboard" class="dashboard">
+    <!-- Header -->
+    <header class="dash-header">
+        <div class="dash-header-content">
+            <div class="dash-logo">🏪 ReSell Kenya Seller</div>
+            <div class="dash-user">
+                <span id="dashSellerName">Loading...</span>
+                <span class="status-badge status-active" id="dashStatus">Active</span>
+                <button class="btn btn-sm btn-outline" onclick="logout()" style="color: white; border-color: white;">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="dash-container">
+        <!-- Suspension Notice -->
+        <div class="suspension-notice hidden" id="suspensionNotice">
+            <h3>🚫 Account Suspended</h3>
+            <p>Your seller account has been suspended.</p>
+            <div class="suspension-reason">
+                <strong>Reason:</strong> <span id="suspendReason">Violation of marketplace policies</span><br>
+                <strong>Until:</strong> <span id="suspendDate">2024-12-31</span>
+            </div>
+            <button class="btn-white" onclick="showAppeal()">Apply for Review</button>
+            
+            <div class="hidden" id="appealForm" style="margin-top: 16px;">
+                <textarea class="form-textarea" placeholder="Explain why your account should be reinstated..." id="appealText"></textarea>
+                <button class="btn-white" style="margin-top: 8px; width: 100%;" onclick="submitAppeal()">Submit Appeal</button>
+            </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-label">Total Products</div>
+                <div class="stat-value" id="statProducts">0</div>
+                <div class="stat-sublabel">Active listings</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Weekly Uploads</div>
+                <div class="stat-value" id="statUploads">0/2</div>
+                <div class="stat-sublabel">This week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Product Views</div>
+                <div class="stat-value" id="statViews">0</div>
+                <div class="stat-sublabel">Last 30 days</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-label">Boosted</div>
+                <div class="stat-value" id="statBoosted">0</div>
+                <div class="stat-sublabel">Active boosts</div>
+            </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="dash-grid">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <button class="nav-btn active" onclick="showDashSection('products')" id="nav-products">📦 My Products</button>
+                <button class="nav-btn" onclick="showDashSection('add')" id="nav-add">➕ Add Product</button>
+                <button class="nav-btn" onclick="showDashSection('subscription')" id="nav-subscription">⭐ Subscription</button>
+                <button class="nav-btn" onclick="showDashSection('verification')" id="nav-verification">✓ Verification</button>
+                <button class="nav-btn" onclick="showDashSection('boost')" id="nav-boost">🚀 Boost Sales</button>
+                <button class="nav-btn" onclick="showDashSection('analytics')" id="nav-analytics">📊 Analytics</button>
+                <button class="nav-btn" onclick="showDashSection('inbox')" id="nav-inbox">📨 Inbox <span id="inboxBadge" style="background: var(--accent); color: white; padding: 2px 6px; border-radius: 10px; font-size: 10px; margin-left: auto; display: none;">0</span></button>
+                <button class="nav-btn" onclick="showDashSection('notebook')" id="nav-notebook">📓 Notebook</button>
+                <button class="nav-btn" onclick="contactAdmin()">✉️ Contact Admin</button>
+                <button class="nav-btn" onclick="logout()" style="color: var(--accent);">🚪 Logout</button>
+            </div>
+
+            <!-- Content -->
+            <div class="main-content">
+                
+                <!-- Products Section -->
+                <div id="dash-products">
+                    <div class="section-title">
+                        My Products
+                        <button class="btn btn-primary btn-sm" onclick="showDashSection('add')">+ Add New</button>
+                    </div>
+                    
+                    <div class="upload-tracker" id="uploadTracker">
+                        <div class="tracker-header">
+                            <span>Weekly Upload Limit</span>
+                            <span id="uploadFraction">0/2</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="uploadProgress" style="width: 0%"></div>
+                        </div>
+                        <div class="upgrade-prompt hidden" id="upgradePrompt">
+                            ⚡ Upgrade to Pro for 10 uploads/week or Premium for unlimited! 
+                            <a href="#" onclick="showDashSection('subscription'); return false;" style="color: var(--primary); font-weight: 600;">Upgrade Now</a>
+                        </div>
+                    </div>
+
+                    <div class="products-grid" id="productsGrid"></div>
+                    <div class="empty-state hidden" id="emptyProducts">
+                        <div class="empty-icon">📦</div>
+                        <h3>No products yet</h3>
+                        <p>Add your first product to start selling</p>
+                    </div>
+                </div>
+
+                <!-- Add Product -->
+                <div id="dash-add" class="hidden">
+                    <div class="section-title">Add New Product</div>
+                    <form id="addProductForm">
+                        <div class="form-group">
+                            <label class="form-label">Product Title *</label>
+                            <input type="text" class="form-input" id="prodTitle" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Category *</label>
+                                <select class="form-select" id="prodCategory" required>
+                                    <option value="">Select Category</option>
+                                    <option>Electronics</option>
+                                    <option>Vehicles</option>
+                                    <option>Furniture</option>
+                                    <option>Fashion</option>
+                                    <option>Property</option>
+                                    <option>Sports</option>
+                                    <option>Services</option>
+                                    <option>Others</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Condition *</label>
+                                <select class="form-select" id="prodCondition" required>
+                                    <option value="">Select Condition</option>
+                                    <option>New</option>
+                                    <option>Used - Like New</option>
+                                    <option>Used - Good</option>
+                                    <option>Used - Fair</option>
+                                    <option>Refurbished</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label class="form-label">Price (KES) *</label>
+                                <input type="number" class="form-input" id="prodPrice" required placeholder="0" min="1">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Product Image</label>
+                                <input type="file" class="form-input" id="prodImage" accept="image/*">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">County *</label>
+                            <select class="form-select" id="prodCounty" required onchange="loadConstituencies('prod')">
+                                <option value="">Select County</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Constituency *</label>
+                            <select class="form-select" id="prodConstituency" required onchange="loadWards('prod')" disabled>
+                                <option value="">Select Constituency</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Ward *</label>
+                            <select class="form-select" id="prodWard" required disabled>
+                                <option value="">Select Ward</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Exact Location *</label>
+                            <input type="text" class="form-input" id="prodLocation" required placeholder="Street, Building, Shop Number">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Description *</label>
+                            <textarea class="form-textarea" id="prodDescription" required rows="4"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Publish Product</button>
+                    </form>
+                </div>
+
+                <!-- Subscription -->
+                <div id="dash-subscription" class="hidden">
+                    <div class="section-title">Subscription Plan</div>
+                    
+                    <div class="subscription-card" id="currentPlanCard">
+                        <div class="sub-plan" id="currentPlan">STARTER</div>
+                        <div class="sub-price" id="currentPrice">KES 100/month</div>
+                        <div class="sub-features" id="planFeatures">
+                            • 2 uploads per week<br>
+                            • Basic profile<br>
+                            • Standard listing
+                        </div>
+                        <div class="sub-actions">
+                            <button class="btn-white" onclick="showPlanOptions()">Change Plan</button>
+                            <button class="btn-outline-white" onclick="window.open('https://store.pesapal.com/globalventures', '_blank')">Renew</button>
+                        </div>
+                        <div style="margin-top: 12px; font-size: 11px; opacity: 0.9;">
+                            Renews in <span id="daysRemaining">15</span> days
+                        </div>
+                    </div>
+
+                    <div id="planOptions" class="hidden">
+                        <h3 style="margin-bottom: 16px;">Choose Your Plan</h3>
+                        
+                        <div class="plan-options">
+                            <div class="plan-card" onclick="selectPlan('starter')">
+                                <div class="plan-header">
+                                    <span class="plan-name">STARTER</span>
+                                    <span class="plan-amount">KES 100/mo</span>
+                                </div>
+                                <div style="font-size: 12px; color: var(--gray);">
+                                    2 uploads/week • Basic profile • No ordering
+                                </div>
+                                <div style="margin-top: 8px; font-size: 11px; color: var(--primary); font-weight: 600;">
+                                    Annual: KES 1,000/year (Save KES 200)
+                                </div>
+                            </div>
+
+                            <div class="plan-card popular" onclick="selectPlan('pro')">
+                                <span class="popular-tag">POPULAR</span>
+                                <div class="plan-header">
+                                    <span class="plan-name">PRO</span>
+                                    <span class="plan-amount">KES 500/mo</span>
+                                </div>
+                                <div style="font-size: 12px; color: var(--gray);">
+                                    10 uploads/week • Ordering system • Analytics • Priority listing
+                                </div>
+                                <div style="margin-top: 8px; font-size: 11px; color: var(--primary); font-weight: 600;">
+                                    Annual: KES 5,000/year (Save KES 1,000)
+                                </div>
+                            </div>
+
+                            <div class="plan-card" onclick="selectPlan('premium')">
+                                <div class="plan-header">
+                                    <span class="plan-name">PREMIUM</span>
+                                    <span class="plan-amount">KES 1,000/mo</span>
+                                </div>
+                                <div style="font-size: 12px; color: var(--gray);">
+                                    Unlimited uploads • Featured badge • Advanced analytics • Top ranking • Ordering
+                                </div>
+                                <div style="margin-top: 8px; font-size: 11px; color: var(--primary); font-weight: 600;">
+                                    Annual: KES 10,000/year (Save KES 2,000)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="payment-section">
+                            <a href="https://store.pesapal.com/globalventures" target="_blank" class="payment-link">
+                                💳 Pay via Pesapal
+                            </a>
+                            <div class="form-group">
+                                <label class="form-label">Payment Confirmation Code</label>
+                                <input type="text" class="form-input" id="subPaymentCode" placeholder="Enter M-Pesa/Pesapal code">
+                            </div>
+                            <button class="btn btn-primary" style="width: 100%;" onclick="submitPlanChange()">
+                                Submit Payment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verification -->
+                <div id="dash-verification" class="hidden">
+                    <div class="section-title">Apply for Verification Badge</div>
+                    
+                    <div class="card" style="margin-bottom: 20px;">
+                        <h3 style="margin-bottom: 12px; font-size: 16px;">Verified Seller Benefits</h3>
+                        <ul class="benefits-list">
+                            <li>Blue checkmark badge on all listings</li>
+                            <li>Higher search ranking priority</li>
+                            <li>Increased buyer trust & confidence</li>
+                            <li>Priority customer support</li>
+                            <li>Featured seller opportunities</li>
+                            <li>Exclusive verified seller events</li>
+                        </ul>
+                    </div>
+
+                    <form id="verificationForm">
+                        <div class="form-group">
+                            <label class="form-label">National ID Number *</label>
+                            <input type="text" class="form-input" id="verIdNumber" required placeholder="Enter your ID number">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Business Registration Number (Optional)</label>
+                            <input type="text" class="form-input" id="verBusinessReg" placeholder="If registered business">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Business Description *</label>
+                            <textarea class="form-textarea" id="verDescription" required placeholder="Describe your business, products, and selling experience..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">ID Document (Front) *</label>
+                            <div class="file-upload" onclick="document.getElementById('idFront').click()">
+                                <div id="idFrontLabel">📷 Click to upload ID front</div>
+                                <input type="file" id="idFront" accept="image/*" style="display: none;" required onchange="updateFileLabel('idFront', 'idFrontLabel')">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">ID Document (Back) *</label>
+                            <div class="file-upload" onclick="document.getElementById('idBack').click()">
+                                <div id="idBackLabel">📷 Click to upload ID back</div>
+                                <input type="file" id="idBack" accept="image/*" style="display: none;" required onchange="updateFileLabel('idBack', 'idBackLabel')">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">Selfie holding ID *</label>
+                            <div class="file-upload" onclick="document.getElementById('idSelfie').click()">
+                                <div id="idSelfieLabel">📷 Click to upload selfie</div>
+                                <input type="file" id="idSelfie" accept="image/*" style="display: none;" required onchange="updateFileLabel('idSelfie', 'idSelfieLabel')">
+                            </div>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width: 100%;">Submit for Verification</button>
+                    </form>
+                </div>
+
+                <!-- Boost Sales -->
+                <div id="dash-boost" class="hidden">
+                    <div class="section-title">Boost Your Sales</div>
+                    
+                    <div class="boost-grid">
+                        <div class="boost-card" onclick="selectBoost('1day', 100, 1200)">
+                            <div class="boost-header">
+                                <span class="boost-title">1 Day Boost</span>
+                                <span class="boost-price">KES 100</span>
+                            </div>
+                            <div class="reach-bar"><div class="reach-fill" style="width: 20%;"></div></div>
+                            <div style="font-size: 12px; color: var(--gray);">Reach up to 1,200 people</div>
+                        </div>
+
+                        <div class="boost-card" onclick="selectBoost('5day', 300, 5000)">
+                            <div class="boost-header">
+                                <span class="boost-title">5 Days Boost</span>
+                                <span class="boost-price">KES 300</span>
+                            </div>
+                            <div class="reach-bar"><div class="reach-fill" style="width: 40%;"></div></div>
+                            <div style="font-size: 12px; color: var(--gray);">Reach up to 5,000 people • Save KES 200</div>
+                        </div>
+
+                        <div class="boost-card" onclick="selectBoost('10day', 700, 15000)">
+                            <div class="boost-header">
+                                <span class="boost-title">10 Days Boost</span>
+                                <span class="boost-price">KES 700</span>
+                            </div>
+                            <div class="reach-bar"><div class="reach-fill" style="width: 70%;"></div></div>
+                            <div style="font-size: 12px; color: var(--gray);">Reach up to 15,000 people</div>
+                        </div>
+
+                        <div class="boost-card" onclick="selectBoost('30day', 1500, 40000)">
+                            <div class="boost-header">
+                                <span class="boost-title">30 Days Boost ⭐</span>
+                                <span class="boost-price">KES 1,500</span>
+                            </div>
+                            <div class="reach-bar"><div class="reach-fill" style="width: 100%;"></div></div>
+                            <div style="font-size: 12px; color: var(--gray);">Reach up to 40,000 people • Best Value • Save KES 1,500</div>
+                        </div>
+                    </div>
+
+                    <div id="boostFormSection" class="hidden">
+                        <div class="card">
+                            <h3 style="margin-bottom: 16px;">Complete Boost Purchase</h3>
+                            
+                            <div class="form-group">
+                                <label class="form-label">Selected Package</label>
+                                <input type="text" class="form-input" id="selectedBoost" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="form-label">Select Product to Boost</label>
+                                <select class="form-select" id="boostProductSelect">
+                                    <option value="">Choose product...</option>
+                                </select>
+                            </div>
+
+                            <div class="payment-section">
+                                <a href="https://store.pesapal.com/globalventures" target="_blank" class="payment-link">
+                                    💳 Pay via Pesapal
+                                </a>
+                                <div class="form-group">
+                                    <label class="form-label">Payment Confirmation Code</label>
+                                    <input type="text" class="form-input" id="boostPaymentCode" placeholder="Enter confirmation code">
+                                </div>
+                                <button class="btn btn-primary" style="width: 100%;" onclick="submitBoost()">
+                                    Activate Boost
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Analytics -->
+                <div id="dash-analytics" class="hidden">
+                    <div class="section-title">Performance Analytics</div>
+                    
+                    <div class="analytics-grid">
+                        <div class="analytic-card">
+                            <div class="analytic-number" id="analViews">1,245</div>
+                            <div class="analytic-label">Total Views</div>
+                        </div>
+                        <div class="analytic-card">
+                            <div class="analytic-number" id="analContacts">23</div>
+                            <div class="analytic-label">Contact Clicks</div>
+                        </div>
+                        <div class="analytic-card">
+                            <div class="analytic-number" id="analConversion">1.8%</div>
+                            <div class="analytic-label">Conversion Rate</div>
+                        </div>
+                        <div class="analytic-card">
+                            <div class="analytic-number" id="analAvgTime">2m 15s</div>
+                            <div class="analytic-label">Avg. View Time</div>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <h3 style="margin-bottom: 16px; font-size: 14px;">Views This Week</h3>
+                        <div class="chart-container">
+                            <div class="chart-bar" style="height: 40%;"><span class="chart-label">Mon</span></div>
+                            <div class="chart-bar" style="height: 65%;"><span class="chart-label">Tue</span></div>
+                            <div class="chart-bar" style="height: 45%;"><span class="chart-label">Wed</span></div>
+                            <div class="chart-bar" style="height: 80%;"><span class="chart-label">Thu</span></div>
+                            <div class="chart-bar" style="height: 55%;"><span class="chart-label">Fri</span></div>
+                            <div class="chart-bar" style="height: 90%;"><span class="chart-label">Sat</span></div>
+                            <div class="chart-bar" style="height: 70%;"><span class="chart-label">Sun</span></div>
+                        </div>
+                    </div>
+
+                    <div class="card" style="margin-top: 16px;">
+                        <h3 style="margin-bottom: 12px; font-size: 14px;">Top Performing Products</h3>
+                        <div id="topProducts"></div>
+                    </div>
+                </div>
+
+                <!-- Inbox -->
+                <div id="dash-inbox" class="hidden">
+                    <div class="section-title">Inbox</div>
+                    <div class="inbox-list" id="inboxList"></div>
+                </div>
+
+                <!-- Notebook -->
+                <div id="dash-notebook" class="hidden">
+                    <div class="section-title">Seller Notebook</div>
+                    <p style="font-size: 12px; color: var(--gray); margin-bottom: 12px;">
+                        Private notes saved on your device
+                    </p>
+                    <textarea id="sellerNotes" style="width: 100%; min-height: 300px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); font-family: inherit; resize: vertical;" placeholder="Write your notes here... customer requests, pricing strategies, inventory tracking, etc."></textarea>
+                    <button class="btn btn-primary" style="margin-top: 12px;" onclick="saveNotes()">Save Notes</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Float -->
+    <div class="quick-float">
+        <button class="float-btn" onclick="scrollToTop()" title="Back to Top">↑</button>
+    </div>
+
+    <!-- Edit Product Modal -->
+    <div class="modal-overlay" id="editModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3>Edit Product</h3>
+                <button class="modal-close" onclick="closeModal('editModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editProductForm">
+                    <input type="hidden" id="editProductId">
+                    <div class="form-group">
+                        <label class="form-label">Product Title</label>
+                        <input type="text" class="form-input" id="editTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Price (KES)</label>
+                        <input type="number" class="form-input" id="editPrice" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Description</label>
+                        <textarea class="form-textarea" id="editDescription" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Save Changes</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+</div>
+
+<script>
+// ==========================================
+// KENYA LOCATIONS DATA - ALL 47 COUNTIES
+// ==========================================
+const kenyaData = {
+    "Mombasa": {
+        "Changamwe": ["Changamwe", "Chaani", "Airport", "Kipevu", "Port Reitz", "Tudor"],
+        "Jomvu": ["Jomvu Kuu", "Miritini", "Mikindani"],
+        "Kisauni": ["Mjambere", "Junda", "Bamburi", "Mwakirunge", "Mtopanga", "Magogoni", "Shanzu"],
+        "Nyali": ["Frere Town", "Ziwa la Ng'ombe", "Mkomani", "Kongowea", "Kadzandani"],
+        "Likoni": ["Mtongwe", "Shika Adabu", "Bofu", "Likoni", "Timbwani"],
+        "Mvita": ["Mji wa Kale", "Tudor", "Tononoka", "Shimanzi", "Ganjoni", "Majengo"]
+    },
+    "Kwale": {
+        "Msambweni": ["Gombato", "Ukunda", "Kinondo", "Ramisi"],
+        "Lunga Lunga": ["Lunga Lunga", "Pongwe Kikoneni", "Dzombo", "Vanga"],
+        "Matuga": ["Tsimba", "Golini", "Waa", "Tiwi", "Kubo South", "Mkurumuji"],
+        "Kinango": ["Nadavaya", "Puma", "Kinango", "Mackinnon Road", "Chengoni", "Mwavumbo", "Kasemeni"]
+    },
+    "Kilifi": {
+        "Kilifi North": ["Tezo", "Sokoni", "Kibarani", "Dabaso", "Matsangoni", "Watamu", "Mnarani"],
+        "Kilifi South": ["Junju", "Mwarakaya", "Shimo la Tewa", "Chasimba", "Mtepeni"],
+        "Kaloleni": ["Mariakani", "Kayafungo", "Kaloleni", "Mweza", "Rabai", "Kambe"],
+        "Ganze": ["Ganze", "Sokoke", "Bamba", "Jilore", "Vitengeni"],
+        "Malindi": ["Jilore", "Kakuyuni", "Ganda", "Malindi Town", "Shella", "Watamu"],
+        "Magarini": ["Marafa", "Magarini", "Gongoni", "Adu", "Garashi", "Sabaki"]
+    },
+    "Tana River": {
+        "Garsen": ["Kipini West", "Garsen", "Kipini East", "Garsen South", "Garsen Central", "Garsen North", "Garsen West"],
+        "Galole": ["Kinakomba", "Mikinduni", "Chewani", "Wayu"],
+        "Bura": ["Bangale", "Madogo", "Sala", "Bura"]
+    },
+    "Lamu": {
+        "Lamu East": ["Faza", "Basuba", "Kiunga"],
+        "Lamu West": ["Shella", "Mkomani", "Hindi", "Mkunumbi", "Bahari", "Witu", "Mpeketoni"]
+    },
+    "Taita Taveta": {
+        "Taveta": ["Chala", "Rukanga", "Mata", "Bomani", "Mboghoni", "Machi"],
+        "Wundanyi": ["Wundanyi", "Mwereni", "Wumingu", "Kidaya Ndegenyi", "Kighononyi", "Chawia"],
+        "Mwatate": ["Ronge", "Mwatate", "Bura", "Chigu", "Kasigau"],
+        "Voi": ["Marungu", "Mbololo", "Sagalla", "Kaloleni", "Ngolia", "Kasigau"]
+    },
+    "Garissa": {
+        "Garissa Township": ["Waberi", "Galbet", "Township", "Iftin", "Shafshafey"],
+        "Balambala": ["Balambala", "Danyere", "Saka", "Sankuri"],
+        "Lagdera": ["Modogashe", "Beno", "Goreale", "Sabena", "Dertu"],
+        "Dadaab": ["Dadaab", "Labasigale", "Damajale", "Liboi", "Abakaile"],
+        "Fafi": ["Bura", "Nanighi", "Maalimin", "Sala", "Fafi"],
+        "Ijara": ["Masalani", "Sangailu", "Ijara", "Kotile", "Hulugho"]
+    },
+    "Wajir": {
+        "Wajir North": ["Gurar", "Bute", "Korondile", "Malkagufu", "Batalu", "Danaba"],
+        "Wajir East": ["Wagberi", "Township", "Barwago", "Khorof Harar"],
+        "Tarbaj": ["Tarbaj", "Wajir Bor", "Habaswein", "Elben", "Buna"],
+        "Wajir West": ["Arbajahan", "Hadado", "Adamasajide", "Ganyure", "Wajir Bor"],
+        "Eldas": ["Eldas", "Dela", "Lakoley South", "Elnur", "Tula Tula"],
+        "Wajir South": ["Benane", "Burder", "Dif", "Lagboghol South", "Ibrahim Ure"]
+    },
+    "Mandera": {
+        "Mandera West": ["Takaba", "Guba", "Dandu", "Kamora", "Malkamari", "Lagsure"],
+        "Banissa": ["Banissa", "Derkhale", "Guticha", "Ashabito", "Morothile"],
+        "Mandera North": ["Rhamu", "Ashabito", "Guticha", "Marothile"],
+        "Mandera South": ["Wargadud", "Kutulo", "Elwak South", "Elwak North", "Shimbir Fatuma"],
+        "Mandera East": ["Township", "Nebo", "Khalalio", "Libehia", "Tulli"],
+        "Lafey": ["Lafey", "Waranqara", "Alango Gof", "Bibbilio", "Fino"]
+    },
+    "Marsabit": {
+        "Moyale": ["Butiye", "Sololo", "Heilu", "Golole", "Obbu", "Moyale Township", "Uran", "Godoma"],
+        "North Horr": ["North Horr", "Dukana", "Maikona", "Turbi", "Illeret"],
+        "Saku": ["Saku", "Sagante", "Karare", "Laisamis"],
+        "Laisamis": ["Laisamis", "Loiyangalani", "Kargi", "Korr", "Logologo", "Merille"]
+    },
+    "Isiolo": {
+        "Isiolo North": ["Wabera", "Bulla Pesa", "Chari", "Cherab", "Ngare Mara", "Bisan Biliqo", "Oldonyiro"],
+        "Isiolo South": ["Garbatulla", "Kinna", "Sericho", "Merti", "Chari"]
+    },
+    "Meru": {
+        "Igembe South": ["Maua", "Kiegoi", "Athiru Gaiti", "Akachiu", "Kangeta"],
+        "Igembe North": ["Antuambui", "Ntunene", "Antubochiu", "Mailo Tatu", "Uringu"],
+        "Igembe Central": ["Igembe Central", "Akirang'ombe", "Athiru Ruujine", "Ngundune", "Antoongombe"],
+        "Tigania West": ["Athwana", "Akithi", "Kianjai", "Mbeu", "Nkomo"],
+        "Tigania East": ["Thangatha", "Mikinduri", "Kigumo", "Muthara", "Karama"],
+        "North Imenti": ["Municipality", "Ntima East", "Ntima West", "Nyaki", "Timau"],
+        "Buuri": ["Kiirua", "Ruiri", "Kibirichia", "Akachiu"],
+        "Central Imenti": ["Abothuguchi Central", "Abothuguchi West", "Kiagu", "Mwanganthia"],
+        "South Imenti": ["Mitunguu", "Igoji East", "Igoji West", "Abogeta East", "Abogeta West", "Nkuene"]
+    },
+    "Tharaka Nithi": {
+        "Maara": ["Mitheru", "Muthambi", "Karingani", "Magumoni", "Mwiambalwa", "Kiamuchairu"],
+        "Chuka": ["Igambang'ombe", "Mugwe", "Nkondi", "Rubate", "Chogoria"],
+        "Tharaka": ["Gatunga", "Mukothima", "Nkondi", "Chiakariga", "Marimanti", "Muthara"]
+    },
+    "Embu": {
+        "Manyatta": ["Ruguru", "Kithimu", "Ngandori", "Mbeti North", "Mbeti South", "Makima", "Embu West"],
+        "Runyenjes": ["Gaturi South", "Gaturi North", "Kagaari South", "Kagaari North", "Central Ward", "Kyeni North", "Kyeni South"],
+        "Mbeere South": ["Mwea", "Makima", "Kiambeere", "Mbeti South"],
+        "Mbeere North": ["Nthawa", "Muminji", "Siakago", "Ishiara"]
+    },
+    "Kitui": {
+        "Mwingi North": ["Ngomeni", "Kyuso", "Mumoni", "Tseikuru", "Tharaka"],
+        "Mwingi West": ["Migwani", "Kiomo", "Kibwezi West", "Nguuni", "Nuu", "Migwani"],
+        "Mwingi Central": ["Mwingi Central", "Kivou", "Nguni", "Nuu", "Mui", "Waita"],
+        "Kitui West": ["Mutonguni", "Kauwi", "Matinyani", "Kwa Vonza", "Kisasi"],
+        "Kitui Rural": ["Kanyangi", "Mbitini", "Kaveta", "Kisasi", "Kwa Vonza"],
+        "Kitui Central": ["Miambani", "Township", "Kyangwithya West", "Kyangwithya East", "Kanyangi"],
+        "Kitui East": ["Zombe", "Chuluni", "Voo", "Mbitini", "Nzambani", "Mutito"],
+        "Kitui South": ["Ikutha", "Mutomo", "Mutha", "Ikanga", "Kanziko", "Athi"]
+    },
+    "Machakos": {
+        "Masinga": ["Kivandini", "Masinga Central", "Ekalakala", "Kithyooko", "Ndithini", "Masinga Central"],
+        "Yatta": ["Ndalani", "Matuu", "Kithimani", "Ikomba", "Katangi", "Kakuyuni"],
+        "Kangundo": ["Kangundo North", "Kangundo Central", "Kangundo East", "Kangundo West", "Kangundo South"],
+        "Matungulu": ["Tala", "Matungulu North", "Matungulu East", "Matungulu West", "Kyeleni"],
+        "Kathiani": ["Mitaboni", "Kathiani Central", "Upper Kaewa", "Iveti"],
+        "Machakos Town": ["Kalama", "Mua", "Mutituni", "Machakos Central", "Mumbuni North", "Mumbuni South", "Muvuti"],
+        "Mwala": ["Mbiuni", "Makutano", "Masii", "Muthetheni", "Wamunyu", "Kibauni"]
+    },
+    "Makueni": {
+        "Mbooni": ["Tulimani", "Mbooni", "Kithungo", "Kikumbulyu North", "Kikumbulyu South", "Kisau", "Mavindini"],
+        "Kilome": ["Kiou", "Mukaa", "Kasikeu"],
+        "Kaiti": ["Ilima", "Kee", "Kikoko", "Ukia", "Nguumo", "Itangini"],
+        "Makueni": ["Wote", "Muvau", "Kathonzweni", "Nzaui", "Mbitini", "Kalawa", "Kasue"],
+        "Kibwezi West": ["Makindu", "Nguumo", "Kikoko", "Kibwezi", "Nguumo", "Masongaleni"],
+        "Kibwezi East": ["Mtito Andei", "Thange", "Kasikeu", "Nguumo", "Ikanga"]
+    },
+    "Nyandarua": {
+        "Kinangop": ["Githabai", "Githiga", "Njabini", "North Kinangop", "Murungaru", "Magumu", "Githabai"],
+        "Kipipiri": ["Wanjohi", "Kipipiri", "Geta", "Githioro", "Karianja"],
+        "Ol Kalou": ["Kaimbaga", "Rurii", "Kanjuiri", "Mirangini", "Kaimbaga"],
+        "Ol Jorok": ["Gathanji", "Gatimu", "Weru", "Charagita"],
+        "Ndaragwa": ["Leshau", "Kiriita", "Central", "Shamata", "Ndaragwa"]
+    },
+    "Nyeri": {
+        "Tetu": ["Aguthi", "Gaki", "Wamagana"],
+        "Kieni": ["Mweiga", "Naromoru", "Endarasha", "Gatarakwa", "Thegu River", "Kabaru", "Rware"],
+        "Mathira": ["Iria-ini", "Ruguru", "Kirimukuyu", "Karima", "Magutu", "Konyu"],
+        "Othaya": ["Mahiga", "Iria-ini", "Chinga", "Karima"],
+        "Mukurweini": ["Giathugu", "Ruguru", "Tiagu", "Gikondi", "Rutune"],
+        "Nyeri Town": ["Gatitu", "Kamakwa", "Ruringu", "Kiganjo", "Chania"]
+    },
+    "Kirinyaga": {
+        "Mwea": ["Mutithi", "Kangai", "Thiba", "Wamumu", "Nyaki", "Murinduko", "Gathigiriri"],
+        "Gichugu": ["Kabare", "Kianyaga", "Njukiini", "Inoi", "Karumandi"],
+        "Ndia": ["Mukure", "Kiine", "Kariti", "Ngariama"],
+        "Kirinyaga Central": ["Kerugoya", "Mutira", "Kanyekini", "Kutus", "Ndindiruku"]
+    },
+    "Murang'a": {
+        "Kangema": ["Kanyenya-ini", "Muguru", "Rwathia", "Kangema"],
+        "Mathioya": ["Gitugi", "Kiru", "Kamacharia", "Mathioya"],
+        "Kiharu": ["Wangu", "Mbiri", "Makuyu", "Kambiti", "Kamahuha", "Ichagaki", "Kariara"],
+        "Kigumo": ["Kigumo", "Muthithi", "Kangari", "Kinyona"],
+        "Maragwa": ["Kimorori", "Kambiti", "Kariara", "Nginda", "Ichagaki"],
+        "Kandara": ["Ng'araria", "Muruka", "Kagunduini", "Gaichanjiru", "Ithiru", "Ruchu"],
+        "Gatanga": ["Gatanga", "Kakuzi", "Mugumo", "Kihumbu-ini", "Gatura", "Ithanga"]
+    },
+    "Kiambu": {
+        "Gatundu South": ["Ng'enda", "Kiamwangi", "Kiganjo", "Ndarugu", "Ngenda"],
+        "Gatundu North": ["Gituamba", "Kamwangi", "Mangu", "Gatundu", "Kiamwangi"],
+        "Juja": ["Juja", "Witeithie", "Kalimoni", "Athi River", "Majengo"],
+        "Thika Town": ["Township", "Kamenu", "Ngoliba", "Witeithie", "Munyu"],
+        "Ruiru": ["Ruiru", "Gitothua", "Biashara", "Gatongora", "Kahawa Sukari", "Kahawa Wendani", "Kiuu", "Mugutha"],
+        "Githunguri": ["Githunguri", "Githiga", "Ikinu", "Ngewa", "Komothai"],
+        "Kiambu": ["Kiambu", "Ting'ang'a", "Ndumberi", "Riabai", "Township"],
+        "Kiambaa": ["Kiambaa", "Cianda", "Karuri", "Ndenderu", "Muchatha", "Kihara"],
+        "Kabete": ["Uthiru", "Kabete", "Gatimu", "Gitaru", "Muguga"],
+        "Kikuyu": ["Karai", "Nachu", "Sigona", "Kikuyu", "Kinoo", "Muguga"],
+        "Limuru": ["Bibirioni", "Limuru Central", "Ndeiya", "Limuru East", "Ngecha", "Tigoni"],
+        "Lari": ["Lari", "Kirenga", "Kijabe", "Nyanduma", "Kinale", "Kiambu Town"]
+    },
+    "Turkana": {
+        "Turkana North": ["Kaeris", "Lake Zone", "Lapur", "Kaaleng", "Kibish", "Nakalale"],
+        "Turkana West": ["Kakuma", "Lopur", "Songot", "Kalobeyei", "Lokichoggio", "Nanaam"],
+        "Turkana Central": ["Kerio", "Kang'atotha", "Kalokol", "Lodwar Township", "Kanamkemer", "Kotaruk"],
+        "Loima": ["Loima", "Lokiriama", "Lorengepir", "Kotaruk", "Kalapata"],
+        "Turkana South": ["Kaptir", "Katilu", "Lokichar", "Lokori", "Kochodin"],
+        "Turkana East": ["Kapedo", "Lokori", "Lomelo", "Lokichar", "Kaptir"]
+    },
+    "West Pokot": {
+        "Kapenguria": ["Riwo", "Kapenguria", "Mnange", "Kacheliba", "Siyoi", "Endugh", "Sook"],
+        "Sigor": ["Sekerr", "Masool", "Lomut", "Weiwei", "Suam"],
+        "Kacheliba": ["Kacheliba", "Suam", "Alale", "Kapchok", "Sook", "Konyao"],
+        "Pokot South": ["Chepareria", "Batei", "Lelan", "Tapach", "Alale"]
+    },
+    "Samburu": {
+        "Samburu West": ["Maralal", "Poro", "Lodokejek", "Suguta Marmar", "Kirisia", "Baragoi"],
+        "Samburu North": ["El-Barta", "Nachola", "Ndoto", "Nyiro", "Angata Nanyokie", "Baawa"],
+        "Samburu East": ["Waso ward", "Wamba", "Lengusaka", "Lorroki", "Lengusaka", "Mukogodo East"]
+    },
+    "Trans Nzoia": {
+        "Kwanza": ["Kwanza", "Kapomboi", "Keiyo", "Bidii", "Kwanza"],
+        "Endebess": ["Endebess", "Chepchoina", "Matumbei", "Sirende"],
+        "Saboti": ["Saboti", "Machewa", "Sinyerere", "Tulwet", "Kinyoro"],
+        "Kiminini": ["Kiminini", "Sirende", "Waitaluk", "Hospital", "Sikhendu"],
+        "Cherangany": ["Cherangany", "Chepsiro", "Sinyerere", "Kaplamai", "Tulwet", "Sabot"]
+    },
+    "Uasin Gishu": {
+        "Soy": ["Moi's Bridge", "Kapkures", "Ziwa", "Segero", "Kipsomba", "Soy"],
+        "Turbo": ["Turbo", "Ngechek", "Kamagut", "Kiplombe", "Kapsaosy", "Chepkemel"],
+        "Moiben": ["Moiben", "Karuna", "Sergoit", "Kimumu", "Kapkures"],
+        "Ainabkoi": ["Kapsoya", "Kaptagat", "Ainabkoi", "Kapsoya"],
+        "Kapseret": ["Kapseret", "Kipkenyo", "Langas", "Simat", "Megun"],
+        "Kesses": ["Kesses", "Cheptiret", "Tulwet", "Tarakwa", "Ainabkoi"]
+    },
+    "Elgeyo Marakwet": {
+        "Marakwet East": ["Kapyego", "Sambirir", "Endo", "Embobut", "Sambirir"],
+        "Marakwet West": ["Lelan", "Sengwer", "Cherangany", "Moiben", "Kapsowar", "Arror"],
+        "Keiyo North": ["Emsoo", "Kamariny", "Tambach", "Kapchemutwa", "Tirioko"],
+        "Keiyo South": ["Kaptarakwa", "Chepkorio", "Soy", "Kabiemit", "Metkei", "Kaptere"]
+    },
+    "Nandi": {
+        "Tinderet": ["Tinderet", "Songhor", "Soba", "Kapchorua", "Kipkaren"],
+        "Aldai": ["Kabwareng", "Kaptumo", "Kemeloi", "Kobujoi", "Terik", "Aldai"],
+        "Nandi Hills": ["Nandi Hills", "Chepkunyuk", "Ol'lessos", "Kapchorua", "Kipkaren"],
+        "Chesumei": ["Chemundu", "Kosirai", "Lelmokwo", "Kaptel", "Kiptuiya", "Chesumei"],
+        "Emgwen": ["Chepkumia", "Cheptabach", "Kapsabet", "Kilibwoni", "Emgwen"],
+        "Mosop": ["Kabiyet", "Kabisaga", "Sangalo", "Chepterwai", "Mosop"],
+        "Tindiret": ["Tindiret", "Songhor", "Soba", "Kapchorua", "Kipkaren"]
+    },
+    "Baringo": {
+        "Tiaty": ["Tirioko", "Kolowa", "Ribkwo", "Silale", "Churo", "Amaya"],
+        "Baringo North": ["Barwessa", "Saimo Soi", "Kabartonjo", "Saimo Kipsaraman", "Bartabwa"],
+        "Baringo Central": ["Kabarnet", "Sacho", "Tenges", "Ewalel", "Kapropita"],
+        "Baringo South": ["Marigat", "Ilchamus", "Mochongoi", "Mukutani", "Kiserian"],
+        "Mogotio": ["Mogotio", "Emining", "Kisanana", "Mogotio"],
+        "Eldama Ravine": ["Eldama Ravine", "Lembus", "Lembus Kwen", "Mumberes", "Maji Mazuri"]
+    },
+    "Laikipia": {
+        "Laikipia West": ["Olmoran", "Rumuruti", "Ngobit", "Sipili", "Marmanet", "Githiga"],
+        "Laikipia East": ["Ngarendare", "Tigithi", "Thingithu", "Nanyuki", "Umande"],
+        "Laikipia North": ["Sosian", "Segera", "Mukogodo East", "Mukogodo West", "Naibunga"]
+    },
+    "Nakuru": {
+        "Molo": ["Molo", "Sachangwan", "Turi", "Elburgon", "Mariashoni"],
+        "Njoro": ["Njoro", "Nessuit", "Lare", "Mauche", "Kihingo"],
+        "Naivasha": ["Biashara", "Hells Gate", "Lake View", "Maiella", "Olkaria", "Naivasha East", "Viwandani"],
+        "Gilgil": ["Gilgil", "Elementaita", "Mbaruk", "Eburu", "Murindati"],
+        "Kuresoi South": ["Kiptagich", "Tinet", "Kuresoi", "Amalo"],
+        "Kuresoi North": ["Nyota", "Sirikwa", "Kamara", "Kiptororo"],
+        "Subukia": ["Subukia", "Kabazi", "Weseges", "Kabazi"],
+        "Rongai": ["Menengai West", "Soin", "Mosop", "Solai", "Dundori", "Keringet"],
+        "Bahati": ["Bahati", "Dundori", "Kabatini", "Lanet", "Naivasha"],
+        "Nakuru Town West": ["Barut", "London", "Kaptembwo", "Dundori", "Keringet"],
+        "Nakuru Town East": ["Biashara", "Flamingo", "Menengai", "Nakuru East", "Shaabab"]
+    },
+    "Narok": {
+        "Kilgoris": ["Kilgoris", "Angata Barikoi", "Keyian", "Lolgorian", "Mogondo", "Ololmasani"],
+        "Emurua Dikirr": ["Ilkerin", "Olgos", "Mogondo", "Emurua Dikirr"],
+        "Narok North": ["Narok West", "Narok Central", "Olpusimoru", "Olokurto", "Nkareta", "Olorropil"],
+        "Narok East": ["Mosiro", "Ildamat", "Keekonyokie", "Suswa", "Mara"],
+        "Narok South": ["Maji Moto", "Ololulung'a", "Melelo", "Loita", "Siana", "Mara"]
+    },
+    "Kajiado": {
+        "Kajiado North": ["Ongata Rongai", "Nkoroi", "Olkeri", "Ngong", "Matasia"],
+        "Kajiado Central": ["Kajiado Central", "Ildamat", "Dalas", "Matapato North", "Matapato South"],
+        "Kajiado West": ["Magadi", "Iloodokilani", "Keekonyokie", "Mosiro", "Ewuaso Kedong"],
+        "Kajiado South": ["Entonet", "Lenkisim", "Mbirikani", "Kimana", "Rombo"],
+        "Kajiado East": ["Kaputiei North", "Kaputiei South", "Kitengela", "Athi River", "Kenyawa"]
+    },
+    "Kericho": {
+        "Kipkelion East": ["Kipkelion", "Tendeno", "Kedowa", "Chepseon", "Londiani"],
+        "Kipkelion West": ["Kunyak", "Kipkelion", "Londiani", "Tendeno", "Chepseon"],
+        "Ainamoi": ["Kipchebor", "Kapsoit", "Ainamoi", "Kipchimchim", "Kiptagich"],
+        "Bureti": ["Londiani", "Cheborge", "Kipreres", "Kimulot", "Tebesonik", "Sosiot"],
+        "Belgut": ["Kabianga", "Waldai", "Cheptororiet", "Seretut", "Chilchila"],
+        "Sigowet Soin": ["Sigowet", "Soin", "Kaplelartet", "Kipsitet", "Cheborge"]
+    },
+    "Bomet": {
+        "Chepalungu": ["Chepalungu", "Sigor", "Kong'asis", "Nyangores", "Sigor", "Chebunyo"],
+        "Bomet East": ["Merigi", "Kembu", "Longisa", "Kipreres", "Chemaner"],
+        "Bomet Central": ["Silibwet", "Ndabib", "Kipreres", "Chemaner", "Singorwet"],
+        "Konoin": ["Kimulot", "Mogogosiek", "Boito", "Embomos", "Cheptalal"],
+        "Sotik": ["Sotik", "Kapletundo", "Chebilat", "Chemagel", "Kipsonoi", "Abosi"]
+    },
+    "Kakamega": {
+        "Lugari": ["Lugari", "Lumakanda", "Chekalini", "Mautuma", "Lukusi", "Kongoni"],
+        "Likuyani": ["Likuyani", "Sango", "Kongoni", "Nzoia", "Sinoko"],
+        "Malava": ["Malava", "Kabras", "Butali", "Manda", "Shivanga", "Lugari"],
+        "Lurambi": ["Lurambi", "Shirere", "Butsotso East", "Butsotso South", "Mahiakalo"],
+        "Navakholo": ["Navakholo", "Bunyala West", "Bunyala East", "Ingostse", "Mundobelwa"],
+        "Mumias West": ["Mumias West", "Musanda", "Etenje", "Lubinu", "Mumias"],
+        "Mumias East": ["Lubinu", "Mumias East", "Malaha", "Isongo", "Makunga"],
+        "Matungu": ["Matungu", "Koyonzo", "Khalaba", "Mayoni", "Namamali"],
+        "Butere": ["Butere", "Marama West", "Marama Central", "Marenyo", "Shianda"],
+        "Khwisero": ["Khwisero", "Kisa North", "Kisa East", "Kisa Central", "Kisa West"],
+        "Shinyalu": ["Shinyalu", "Isukha North", "Isukha Central", "Isukha South", "Isukha East", "Isukha West"],
+        "Ikolomani": ["Ikolomani", "Idakho East", "Idakho Central", "Idakho North", "Idakho South"]
+    },
+    "Vihiga": {
+        "Vihiga": ["Vihiga", "Central Maragoli", "Wodanga", "Busali", "Chavakali"],
+        "Sabatia": ["Sabatia", "Chavakali", "Wodanga", "Busali", "Lyaduywa", "Isulu"],
+        "Hamisi": ["Hamisi", "Shiru", "Gisambai", "Shamakhokho", "Tigoi", "Mungoma"],
+        "Luanda": ["Luanda", "Wemilabi", "Mwibona", "Emuhaya", "Emabungo"],
+        "Emuhaya": ["Emuhaya", "Central Bunyore", "West Bunyore", "North East Bunyore"]
+    },
+    "Bungoma": {
+        "Mount Elgon": ["Cheptais", "Chesikaki", "Chepyuk", "Kapkateny", "Kaptama", "Elgon"],
+        "Sirisia": ["Sirisia", "Malakisi", "Lwandanyi", "Namwela", "Mukuyuni"],
+        "Kabuchai": ["Kabuchai", "Bwake", "Luuya", "Mukuyuni", "West Nalondo"],
+        "Bumula": ["Bumula", "Khasoko", "Kabula", "Kimaeti", "South Bukusu", "West Bukusu"],
+        "Kanduyi": ["Kanduyi", "Bukembe West", "Bukembe East", "Township", "Khalaba"],
+        "Webuye East": ["Webuye East", "Maraka", "Misikhu", "Matulo", "Bokoli"],
+        "Webuye West": ["Webuye West", "Bokoli", "Matulo", "Mihuu", "Ndivisi"],
+        "Kimilili": ["Kimilili", "Kibingei", "Tongaren", "Maeni", "Naitiri"],
+        "Tongaren": ["Tongaren", "Soysambu", "Ndalu", "Malakisi", "Sirende", "Tongaren"]
+    },
+    "Busia": {
+        "Teso North": ["Malaba Central", "Malaba North", "Ang'urai South", "Ang'urai North", "Ang'urai East"],
+        "Teso South": ["Chakol South", "Chakol North", "Amukura West", "Amukura East", "Amukura Central"],
+        "Nambale": ["Nambale", "Bukhayo North", "Bukhayo East", "Bukhayo Central"],
+        "Matayos": ["Matayos", "Bukhayo West", "Mayenje", "Bukhayo Central", "Busibwabo"],
+        "Butula": ["Butula", "Marachi West", "Marachi Central", "Marachi East", "Elugulu"],
+        "Funyula": ["Funyula", "Ageng'a Nanguba", "Nangina", "Bwiri"],
+        "Budalangi": ["Budalangi", "Lake Victoria North", "Lake Victoria South", "River Busia"]
+    },
+    "Siaya": {
+        "Ugenya": ["Ugenya", "East Ugenya", "North Ugenya", "West Ugenya", "South Ugenya"],
+        "Ugunja": ["Ugunja", "Sidindi", "Sigomere", "Nambale"],
+        "Alego Usonga": ["Alego Usonga", "Siaya Township", "North Alego", "South Alego", "Central Alego"],
+        "Gem": ["Gem", "Yala Township", "East Gem", "West Gem", "Central Gem"],
+        "Bondo": ["Bondo", "West Yimbo", "Central Sakwa", "South Sakwa", "North Sakwa"],
+        "Rarieda": ["Rarieda", "East Asembo", "West Asembo", "North Uyoma", "South Uyoma"]
+    },
+    "Kisumu": {
+        "Kisumu East": ["Kajulu", "Kolwa Central", "Kolwa East", "Manyatta B", "Nyalenda A", "Nyalenda B"],
+        "Kisumu West": ["South West Kisumu", "Central Kisumu", "Kisumu North", "West Kisumu", "North West Kisumu"],
+        "Kisumu Central": ["Market Milimani", "Municipality", "Kondele", "Nyalenda B"],
+        "Seme": ["Seme", "North Seme", "East Seme", "West Seme", "Central Seme"],
+        "Nyando": ["Awasi", "Ahero", "Kabonyo", "Kobura", "Miwani"],
+        "Muhoroni": ["Muhoroni", "Chemelil", "Miwani", "Ombeyi", "Masogo"],
+        "Nyakach": ["North Nyakach", "East Nyakach", "South Nyakach", "West Nyakach", "Central Nyakach"]
+    },
+    "Homa Bay": {
+        "Kasipul": ["Kasipul", "West Kasipul", "East Kasipul", "Central Kasipul", "South Kasipul"],
+        "Kabondo Kasipul": ["Kabondo East", "Kabondo West", "Kojwach", "Kokwanyo", "Ramba"],
+        "Karachuonyo": ["Karachuonyo", "West Karachuonyo", "North Karachuonyo", "East Karachuonyo", "Central Karachuonyo"],
+        "Rangwe": ["Rangwe", "East Rangwe", "West Rangwe", "North Rangwe", "South Rangwe"],
+        "Homa Bay Town": ["Homa Bay Central", "Homa Bay Arujo", "Homa Bay East", "Homa Bay West"],
+        "Ndhiwa": ["Ndhiwa", "Kanyadoto", "Kanyikela", "North Kabuoch", "South Kabuoch", "Kanyamwa"],
+        "Mbita": ["Mbita", "Gembe", "Lambwe", "Rusinga", "Kasgunga", "Mfangano Island"]
+    },
+    "Migori": {
+        "Rongo": ["Rongo", "North Kamagambo", "Central Kamagambo", "East Kamagambo", "South Kamagambo"],
+        "Awendo": ["Awendo", "North Sakwa", "South Sakwa", "Central Sakwa", "West Sakwa"],
+        "Suna East": ["Suna East", "Kwa", "Kakrao", "Kanyasa", "Suna Central"],
+        "Suna West": ["Suna West", "Wiga", "Wasweta II", "Wasweta I", "Ragana"],
+        "Uriri": ["Uriri", "East Uriri", "West Uriri", "North Uriri", "South Uriri"],
+        "Nyatike": ["Nyatike", "North Kadem", "Macalder", "Kaler", "Got Kachola", "Muhuru"],
+        "Kuria East": ["Kuria East", "Gokeharaka", "Takribu", "Sako", "Buiregi"],
+        "Kuria West": ["Kuria West", "Masaba", "Makerrer", "Tagare", "Nyamosense"]
+    },
+    "Kisii": {
+        "Bonchari": ["Bonchari", "Bomariba", "Bogiamasi", "Bokeira", "Riana"],
+        "South Mugirango": ["South Mugirango", "Bassi", "Bogusero", "Bokimonge", "Mogonga"],
+        "Bomachoge Borabu": ["Bomachoge Borabu", "Boochi Borabu", "Bokimonge", "Mogonga", "Masio"],
+        "Bobasi": ["Bobasi", "Majoge", "Basi Central", "Basi Bogetaorio", "Sameta"],
+        "Bomachoge Chache": ["Bomachoge Chache", "Mosocho", "Bogusero", "Bokimonge", "Mogonga"],
+        "Nyaribari Masaba": ["Nyaribari Masaba", "Ichuni", "Nyamasibi", "Bogusero", "Bokimonge"],
+        "Nyaribari Chache": ["Nyaribari Chache", "Bogusero", "Bokimonge", "Mogonga", "Masio"],
+        "Kitutu Chache North": ["Kitutu Chache North", "Marani", "Kebere", "Bogusero", "Bokimonge"],
+        "Kitutu Chache South": ["Kitutu Chache South", "Nyakoe", "Kiamokama", "Bogusero", "Bokimonge"]
+    },
+    "Nyamira": {
+        "Kitutu Masaba": ["Kitutu Masaba", "Rigoma", "Gachuba", "Kemera", "Magombo"],
+        "West Mugirango": ["West Mugirango", "Nyamaiya", "Bogichora", "Bosamaro", "Bonyamatuta"],
+        "North Mugirango": ["North Mugirango", "Itibo", "Bomwagamo", "Bokeira", "Magwagwa"],
+        "Borabu": ["Borabu", "Mekenene", "Kiabonyoru", "Nyansiongo", "Esise"]
+    },
+    "Nairobi": {
+        "Westlands": ["Kitisuru", "Parklands", "Highridge", "Kangemi", "Mountain View"],
+        "Dagoretti North": ["Kilimani", "Kawangware", "Gatina", "Kileleshwa", "Kabiro"],
+        "Dagoretti South": ["Mutuini", "Ngando", "Riruta", "Uthiru", "Waithaka"],
+        "Lang'ata": ["Karen", "Nairobi West", "Mugumo-ini", "South C", "Nyayo Highrise"],
+        "Kibra": ["Laini Saba", "Lindi", "Makina", "Woodley", "Karanja"],
+        "Roysambu": ["Githurai", "Kahawa West", "Zimmerman", "Roysambu", "Kahawa"],
+        "Kasarani": ["Kasarani", "Njiru", "Ruai", "Dandora", "Kariobangi North"],
+        "Ruaraka": ["Baba Dogo", "Utalii", "Mathare North", "Lucky Summer", "Korogocho"],
+        "Embakasi South": ["Kwa Njenga", "Kwa Reuben", "Pipeline", "Kware", "Tassia"],
+        "Embakasi North": ["Kariobangi South", "Dandora", "Kariobangi North", "Korogocho", "Kariobangi"],
+        "Embakasi Central": ["Kayole North", "Kayole Central", "Kayole South", "Komarock", "Chokaa"],
+        "Embakasi East": ["Upper Savanna", "Lower Savanna", "Embakasi", "Utawala", "Mihango"],
+        "Embakasi West": ["Umoja", "Umoja II", "Mowlem", "Kariobangi South", "Korogocho"],
+        "Makadara": ["Viwandani", "Harambee", "Makongeni", "Pumwani", "Eastleigh North"],
+        "Kamukunji": ["Eastleigh South", "Airbase", "California", "Ngara", "Pumwani"],
+        "Starehe": ["Ngara", "Pangani", "Ziwani", "Kariokor", "Huruma"],
+        "Mathare": ["Mlango Kubwa", "Kiamaiko", "Ngei", "Huruma", "Mabatini"]
+    }
+};
+
+// ==========================================
+// STATE MANAGEMENT
+// ==========================================
+let currentSeller = null;
+let sellerProducts = [];
+let currentPlan = 'starter';
+let selectedBoost = null;
+// Supabase runtime loader
+let useSupabase = false;
+let supApi = null;
+if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) {
+        import('/supabase/api.js')
+            .then(m => { supApi = m; useSupabase = true; console.log('Supabase API loaded'); })
+            .catch(err => console.warn('Failed to load Supabase API', err));
+}
+
+// ==========================================
+// INITIALIZATION
+// ==========================================
+document.addEventListener('DOMContentLoaded', function() {
+    // Populate counties immediately for both forms
+    populateCounties('reg');
+    populateCounties('prod');
+    
+    // Check if already logged in
+    const savedSeller = localStorage.getItem('currentSeller');
+    if (savedSeller) {
+        currentSeller = JSON.parse(savedSeller);
+        sellerProducts = JSON.parse(localStorage.getItem('sellerProducts')) || [];
+        showDashboard();
+    } else {
+        showRegistration();
+    }
+});
+
+// ==========================================
+// NAVIGATION FUNCTIONS
+// ==========================================
+function showRegistration() {
+    document.getElementById('registrationPage').classList.remove('hidden');
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('dashboard').classList.remove('active');
+}
+
+function showLogin() {
+    document.getElementById('registrationPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.remove('hidden');
+    document.getElementById('dashboard').classList.remove('active');
+    
+    // Clear any previous errors
+    document.getElementById('loginError').style.display = 'none';
+}
+
+function showDashboard() {
+    document.getElementById('registrationPage').classList.add('hidden');
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('dashboard').classList.add('active');
+    
+    updateDashboard();
+    renderProducts();
+    renderInbox();
+    loadNotes();
+}
+
+// ==========================================
+// REGISTRATION
+// ==========================================
+document.getElementById('registrationForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const password = document.getElementById('regPassword').value;
+    const confirm = document.getElementById('regConfirm').value;
+
+    if (password !== confirm) {
+        document.getElementById('passwordError').style.display = 'block';
+        return;
+    }
+
+    document.getElementById('passwordError').style.display = 'none';
+
+    const email = document.getElementById('regEmail').value;
+
+    // If Supabase is configured, persist registration in `sellers` table (no OTP)
+    if (useSupabase && supApi && supApi.getSellerByEmail && supApi.createSeller) {
+        try {
+            const { data: existing, error: getErr } = await supApi.getSellerByEmail(email);
+            if (getErr) console.warn('getSellerByEmail error', getErr);
+            if (existing) {
+                showNotification('Email already registered. Please login.', 'error');
+                showLogin();
+                return;
+            }
+
+            // Build seller record matching your DB columns
+            const sellerPayload = {
+                full_name: document.getElementById('regName').value,
+                email: email,
+                phone: document.getElementById('regPhone').value,
+                county: document.getElementById('regCounty').value,
+                constituency: document.getElementById('regConstituency').value,
+                ward: document.getElementById('regWard').value,
+                exact_location: document.getElementById('regLocation').value,
+                business_name: document.getElementById('regBusiness').value,
+                business_description: document.getElementById('regDescription').value,
+                password: password, // store plaintext only for prototype; hash in production
+                status: 'active',
+                plan: 'starter',
+                uploads_this_week: 0,
+                max_uploads: 2,
+                registered_at: new Date().toISOString(),
+                last_login: new Date().toISOString()
+            };
+
+            const { data, error } = await supApi.createSeller(sellerPayload);
+            if (error) {
+                console.error('createSeller error', error);
+                showNotification('Failed to register. Try again later.', 'error');
+                return;
+            }
+
+            // Use returned row if available
+            const created = (data && data[0]) ? data[0] : sellerPayload;
+            currentSeller = created;
+            sellerProducts = [];
+
+            localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+            localStorage.setItem('sellerProducts', JSON.stringify([]));
+
+            showNotification('Welcome! Your seller account is now active.', 'success');
+            showDashboard();
+            return;
+        } catch (err) {
+            console.error('Supabase registration failed', err);
+            showNotification('Registration failed. See console for details.', 'error');
+            return;
+        }
+    }
+
+    // Fallback: existing localStorage behavior
+    const existingSellers = JSON.parse(localStorage.getItem('sellers')) || [];
+    if (existingSellers.find(s => s.email === email)) {
+        showNotification('Email already registered. Please login.', 'error');
+        showLogin();
+        return;
+    }
+
+    const newSeller = {
+        id: Date.now(),
+        fullName: document.getElementById('regName').value,
+        email: email,
+        phone: document.getElementById('regPhone').value,
+        county: document.getElementById('regCounty').value,
+        constituency: document.getElementById('regConstituency').value,
+        ward: document.getElementById('regWard').value,
+        exactLocation: document.getElementById('regLocation').value,
+        businessName: document.getElementById('regBusiness').value,
+        businessDescription: document.getElementById('regDescription').value,
+        password: password, // In production, hash this!
+        status: 'active',
+        plan: 'starter',
+        uploadsThisWeek: 0,
+        maxUploads: 2,
+        registeredAt: new Date().toISOString(),
+        lastLogin: new Date().toISOString()
+    };
+
+    existingSellers.push(newSeller);
+    localStorage.setItem('sellers', JSON.stringify(existingSellers));
+
+    currentSeller = newSeller;
+    sellerProducts = [];
+
+    localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+    localStorage.setItem('sellerProducts', JSON.stringify([]));
+
+    showNotification('Welcome! Your seller account is now active.', 'success');
+    showDashboard();
+});
+
+// ==========================================
+// LOGIN FUNCTIONALITY
+// ==========================================
+document.getElementById('loginForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const email = document.getElementById('loginEmail').value;
+    const password = document.getElementById('loginPassword').value;
+    const loginError = document.getElementById('loginError');
+
+    // If Supabase is available, check sellers table (no OTP)
+    if (useSupabase && supApi && supApi.getSellerByEmail) {
+        (async () => {
+            try {
+                const { data, error } = await supApi.getSellerByEmail(email);
+                if (error) {
+                    console.error('getSellerByEmail error', error);
+                    loginError.style.display = 'block';
+                    showNotification('Login failed', 'error');
+                    return;
+                }
+                if (data && data.password === password) {
+                    // Successful login
+                    currentSeller = data;
+                    sellerProducts = JSON.parse(localStorage.getItem('sellerProducts_' + currentSeller.id)) || [];
+                    localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+                    localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+                    loginError.style.display = 'none';
+                    showNotification('Login successful! Welcome back.', 'success');
+                    showDashboard();
+                } else {
+                    loginError.style.display = 'block';
+                    showNotification('Invalid email or password', 'error');
+                }
+            } catch (err) {
+                console.error('Supabase login error', err);
+                loginError.style.display = 'block';
+                showNotification('Login error', 'error');
+            }
+        })();
+        return;
+    }
+
+    // Fallback: localStorage-based login
+    const existingSellers = JSON.parse(localStorage.getItem('sellers')) || [];
+    const seller = existingSellers.find(s => s.email === email && s.password === password);
+    if (seller) {
+        // Update last login
+        seller.lastLogin = new Date().toISOString();
+        const updatedSellers = existingSellers.map(s => s.id === seller.id ? seller : s);
+        localStorage.setItem('sellers', JSON.stringify(updatedSellers));
+        currentSeller = seller;
+        sellerProducts = JSON.parse(localStorage.getItem('sellerProducts_' + seller.id)) || [];
+        localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+        localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+        loginError.style.display = 'none';
+        showNotification('Login successful! Welcome back.', 'success');
+        showDashboard();
+    } else {
+        loginError.style.display = 'block';
+        showNotification('Invalid email or password', 'error');
+    }
+});
+
+// ==========================================
+// LOCATION FUNCTIONS
+// ==========================================
+function populateCounties(prefix) {
+    const select = document.getElementById(prefix + 'County');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Select County</option>';
+    
+    // Sort counties alphabetically
+    const counties = Object.keys(kenyaData).sort();
+    
+    counties.forEach(county => {
+        const option = document.createElement('option');
+        option.value = county;
+        option.textContent = county;
+        select.appendChild(option);
+    });
+}
+
+function loadConstituencies(prefix) {
+    const countySelect = document.getElementById(prefix + 'County');
+    const constituencySelect = document.getElementById(prefix + 'Constituency');
+    const wardSelect = document.getElementById(prefix + 'Ward');
+    
+    if (!countySelect || !constituencySelect || !wardSelect) return;
+    
+    const county = countySelect.value;
+    
+    // Reset constituency and ward
+    constituencySelect.innerHTML = '<option value="">Select Constituency</option>';
+    wardSelect.innerHTML = '<option value="">Select Ward</option>';
+    wardSelect.disabled = true;
+    
+    if (county && kenyaData[county]) {
+        // Sort constituencies alphabetically
+        const constituencies = Object.keys(kenyaData[county]).sort();
+        
+        constituencies.forEach(constituency => {
+            const option = document.createElement('option');
+            option.value = constituency;
+            option.textContent = constituency;
+            constituencySelect.appendChild(option);
+        });
+        
+        constituencySelect.disabled = false;
+    } else {
+        constituencySelect.disabled = true;
+    }
+}
+
+function loadWards(prefix) {
+    const countySelect = document.getElementById(prefix + 'County');
+    const constituencySelect = document.getElementById(prefix + 'Constituency');
+    const wardSelect = document.getElementById(prefix + 'Ward');
+    
+    if (!countySelect || !constituencySelect || !wardSelect) return;
+    
+    const county = countySelect.value;
+    const constituency = constituencySelect.value;
+    
+    // Reset ward
+    wardSelect.innerHTML = '<option value="">Select Ward</option>';
+    
+    if (county && constituency && kenyaData[county] && kenyaData[county][constituency]) {
+        // Sort wards alphabetically
+        const wards = kenyaData[county][constituency].sort();
+        
+        wards.forEach(ward => {
+            const option = document.createElement('option');
+            option.value = ward;
+            option.textContent = ward;
+            wardSelect.appendChild(option);
+        });
+        
+        wardSelect.disabled = false;
+    } else {
+        wardSelect.disabled = true;
+    }
+}
+
+// ==========================================
+// DASHBOARD FUNCTIONS
+// ==========================================
+function updateDashboard() {
+    if (!currentSeller) return;
+    
+    // Update header
+    document.getElementById('dashSellerName').textContent = currentSeller.fullName || currentSeller.email;
+    
+    const statusBadge = document.getElementById('dashStatus');
+    statusBadge.textContent = (currentSeller.status || 'active').charAt(0).toUpperCase() + (currentSeller.status || 'active').slice(1);
+    statusBadge.className = 'status-badge status-' + (currentSeller.status || 'active');
+    
+    // Show suspension if applicable
+    const suspensionNotice = document.getElementById('suspensionNotice');
+    if (currentSeller.status === 'suspended') {
+        suspensionNotice.classList.remove('hidden');
+        document.querySelectorAll('.sidebar .nav-btn').forEach(btn => {
+            if (!btn.textContent.includes('Logout') && !btn.textContent.includes('Contact')) {
+                btn.disabled = true;
+                btn.style.opacity = '0.5';
+            }
+        });
+    } else {
+        suspensionNotice.classList.add('hidden');
+    }
+    
+    // Update stats
+    document.getElementById('statProducts').textContent = sellerProducts.length;
+    document.getElementById('statUploads').textContent = `${currentSeller.uploadsThisWeek || 0}/${currentSeller.maxUploads || 2}`;
+    document.getElementById('uploadFraction').textContent = `${currentSeller.uploadsThisWeek || 0}/${currentSeller.maxUploads || 2}`;
+    document.getElementById('uploadProgress').style.width = `${((currentSeller.uploadsThisWeek || 0) / (currentSeller.maxUploads || 2)) * 100}%`;
+    
+    const totalViews = sellerProducts.reduce((sum, p) => sum + (p.views || 0), 0);
+    document.getElementById('statViews').textContent = totalViews.toLocaleString();
+    
+    const boosted = sellerProducts.filter(p => p.boosted).length;
+    document.getElementById('statBoosted').textContent = boosted;
+    
+    // Show upgrade prompt if needed
+    const upgradePrompt = document.getElementById('upgradePrompt');
+    if ((currentSeller.plan || 'starter') === 'starter' && (currentSeller.uploadsThisWeek || 0) >= 2) {
+        upgradePrompt.classList.remove('hidden');
+    } else {
+        upgradePrompt.classList.add('hidden');
+    }
+    
+    // Update subscription card
+    updatePlanDisplay();
+}
+
+function updatePlanDisplay() {
+    const plans = {
+        starter: { name: 'STARTER', price: 'KES 100/month', features: '• 2 uploads per week<br>• Basic profile<br>• Standard listing' },
+        pro: { name: 'PRO', price: 'KES 500/month', features: '• 10 uploads per week<br>• Ordering system<br>• Basic analytics<br>• Priority listing' },
+        premium: { name: 'PREMIUM', price: 'KES 1,000/month', features: '• Unlimited uploads<br>• Featured badge<br>• Advanced analytics<br>• Top search ranking<br>• Ordering system' }
+    };
+    
+    const planKey = currentSeller.plan || 'starter';
+    const plan = plans[planKey];
+    
+    document.getElementById('currentPlan').textContent = plan.name;
+    document.getElementById('currentPrice').textContent = plan.price;
+    document.getElementById('planFeatures').innerHTML = plan.features;
+    document.getElementById('daysRemaining').textContent = Math.floor(Math.random() * 30) + 1;
+}
+
+function showDashSection(section) {
+    // Hide all sections
+    document.querySelectorAll('[id^="dash-"]').forEach(el => el.classList.add('hidden'));
+    document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+    
+    // Show selected
+    const selectedSection = document.getElementById('dash-' + section);
+    if (selectedSection) {
+        selectedSection.classList.remove('hidden');
+    }
+    
+    const navBtn = document.getElementById('nav-' + section);
+    if (navBtn) {
+        navBtn.classList.add('active');
+    }
+    
+    // Special handling
+    if (section === 'products') renderProducts();
+    if (section === 'boost') populateBoostProducts();
+    if (section === 'add') {
+        // Reset county dropdowns when opening add product
+        populateCounties('prod');
+        document.getElementById('prodConstituency').disabled = true;
+        document.getElementById('prodWard').disabled = true;
+    }
+}
+
+// ==========================================
+// PRODUCT MANAGEMENT
+// ==========================================
+function renderProducts() {
+    const grid = document.getElementById('productsGrid');
+    const empty = document.getElementById('emptyProducts');
+    
+    if (!grid || !empty) return;
+    
+    grid.innerHTML = '';
+    
+    if (sellerProducts.length === 0) {
+        empty.classList.remove('hidden');
+        return;
+    }
+    
+    empty.classList.add('hidden');
+    
+    sellerProducts.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        
+        let badges = '';
+        if (product.verified) badges += '<span class="product-badge verified">✓</span>';
+        if (product.boosted) badges += '<span class="product-badge boosted">BOOSTED</span>';
+        
+        card.innerHTML = `
+            ${badges}
+            <img src="${product.image || 'https://via.placeholder.com/400x300?text=No+Image'}" class="product-image" alt="${product.title}" onerror="this.src='https://via.placeholder.com/400x300?text=No+Image'">
+            <div class="product-info">
+                <div class="product-name">${product.title}</div>
+                <div class="product-price">KES ${(product.price || 0).toLocaleString()}</div>
+                <div class="product-meta">${product.county || 'N/A'} • ${product.views || 0} views</div>
+            </div>
+            <div class="product-actions">
+                <button class="btn btn-sm btn-primary" onclick="editProduct(${product.id})">Edit</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteProduct(${product.id})">Delete</button>
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+// Add product form handler
+document.getElementById('addProductForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (!currentSeller) {
+        showNotification('Please login first', 'error');
+        return;
+    }
+    
+    // Check limit
+    if ((currentSeller.uploadsThisWeek || 0) >= (currentSeller.maxUploads || 2)) {
+        showNotification('Weekly upload limit reached. Upgrade your plan!', 'error');
+        return;
+    }
+    
+    const title = document.getElementById('prodTitle').value;
+    const price = parseInt(document.getElementById('prodPrice').value);
+    
+    // Handle image
+    const imageInput = document.getElementById('prodImage');
+    let imageUrl = 'https://via.placeholder.com/400x300?text=' + encodeURIComponent(title);
+    
+    if (imageInput.files && imageInput.files[0]) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            imageUrl = e.target.result;
+            saveProduct(title, price, imageUrl);
+        };
+        reader.readAsDataURL(imageInput.files[0]);
+    } else {
+        saveProduct(title, price, imageUrl);
+    }
+});
+
+function saveProduct(title, price, imageUrl) {
+    const product = {
+        id: Date.now(),
+        title: title,
+        category: document.getElementById('prodCategory').value,
+        condition: document.getElementById('prodCondition').value,
+        price: price,
+        county: document.getElementById('prodCounty').value,
+        constituency: document.getElementById('prodConstituency').value,
+        ward: document.getElementById('prodWard').value,
+        location: document.getElementById('prodLocation').value,
+        description: document.getElementById('prodDescription').value,
+        image: imageUrl,
+        views: Math.floor(Math.random() * 100),
+        boosted: false,
+        createdAt: new Date().toISOString()
+    };
+    
+    sellerProducts.push(product);
+    currentSeller.uploadsThisWeek = (currentSeller.uploadsThisWeek || 0) + 1;
+    
+    // Save to both general and user-specific storage
+    localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+    localStorage.setItem('sellerProducts_' + currentSeller.id, JSON.stringify(sellerProducts));
+    localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+    
+    // Update in sellers list
+    const existingSellers = JSON.parse(localStorage.getItem('sellers')) || [];
+    const updatedSellers = existingSellers.map(s => {
+        if (s.id === currentSeller.id) {
+            return {...s, uploadsThisWeek: currentSeller.uploadsThisWeek};
+        }
+        return s;
+    });
+    localStorage.setItem('sellers', JSON.stringify(updatedSellers));
+    
+    // Reset form
+    document.getElementById('addProductForm').reset();
+    document.getElementById('prodConstituency').disabled = true;
+    document.getElementById('prodWard').disabled = true;
+    
+    showDashSection('products');
+    updateDashboard();
+    showNotification('Product published successfully!', 'success');
+}
+
+function editProduct(id) {
+    const product = sellerProducts.find(p => p.id === id);
+    if (!product) return;
+    
+    document.getElementById('editProductId').value = id;
+    document.getElementById('editTitle').value = product.title;
+    document.getElementById('editPrice').value = product.price;
+    document.getElementById('editDescription').value = product.description;
+    
+    document.getElementById('editModal').classList.add('active');
+}
+
+// Edit form handler
+document.getElementById('editProductForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const id = parseInt(document.getElementById('editProductId').value);
+    const product = sellerProducts.find(p => p.id === id);
+    
+    if (product) {
+        product.title = document.getElementById('editTitle').value;
+        product.price = parseInt(document.getElementById('editPrice').value);
+        product.description = document.getElementById('editDescription').value;
+        
+        localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+        localStorage.setItem('sellerProducts_' + currentSeller.id, JSON.stringify(sellerProducts));
+        
+        closeModal('editModal');
+        renderProducts();
+        showNotification('Product updated!', 'success');
+    }
+});
+
+function deleteProduct(id) {
+    if (!confirm('Delete this product?')) return;
+    
+    sellerProducts = sellerProducts.filter(p => p.id !== id);
+    localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+    localStorage.setItem('sellerProducts_' + currentSeller.id, JSON.stringify(sellerProducts));
+    
+    renderProducts();
+    updateDashboard();
+    showNotification('Product deleted', 'success');
+}
+
+// ==========================================
+// SUBSCRIPTION
+// ==========================================
+function showPlanOptions() {
+    document.getElementById('planOptions').classList.remove('hidden');
+}
+
+function selectPlan(plan) {
+    document.querySelectorAll('.plan-card').forEach(c => c.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    currentPlan = plan;
+}
+
+function submitPlanChange() {
+    const code = document.getElementById('subPaymentCode').value;
+    if (!code) {
+        showNotification('Please enter payment confirmation code', 'error');
+        return;
+    }
+    
+    currentSeller.plan = currentPlan;
+    currentSeller.maxUploads = currentPlan === 'starter' ? 2 : currentPlan === 'pro' ? 10 : 999;
+    
+    // Update in all storage locations
+    localStorage.setItem('currentSeller', JSON.stringify(currentSeller));
+    
+    const existingSellers = JSON.parse(localStorage.getItem('sellers')) || [];
+    const updatedSellers = existingSellers.map(s => s.id === currentSeller.id ? currentSeller : s);
+    localStorage.setItem('sellers', JSON.stringify(updatedSellers));
+    
+    document.getElementById('planOptions').classList.add('hidden');
+    document.getElementById('subPaymentCode').value = '';
+    showNotification('Plan upgrade submitted! Will activate after payment verification.', 'success');
+    updateDashboard();
+}
+
+// ==========================================
+// VERIFICATION
+// ==========================================
+document.getElementById('verificationForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    showNotification('Verification submitted! Badge will appear after review.', 'success');
+    this.reset();
+    ['idFrontLabel', 'idBackLabel', 'idSelfieLabel'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = el.textContent.replace('✓ ', '');
+    });
+});
+
+function updateFileLabel(inputId, labelId) {
+    const fileInput = document.getElementById(inputId);
+    const label = document.getElementById(labelId);
+    if (fileInput && label && fileInput.files[0]) {
+        label.innerHTML = `✓ ${fileInput.files[0].name}`;
+    }
+}
+
+// ==========================================
+// BOOST SALES
+// ==========================================
+function populateBoostProducts() {
+    const select = document.getElementById('boostProductSelect');
+    if (!select) return;
+    
+    select.innerHTML = '<option value="">Choose product...</option>';
+    sellerProducts.forEach(p => {
+        const option = document.createElement('option');
+        option.value = p.id;
+        option.textContent = p.title;
+        select.appendChild(option);
+    });
+}
+
+function selectBoost(duration, price, reach) {
+    document.querySelectorAll('.boost-card').forEach(c => c.classList.remove('selected'));
+    event.currentTarget.classList.add('selected');
+    
+    selectedBoost = { duration, price, reach };
+    const selectedBoostInput = document.getElementById('selectedBoost');
+    if (selectedBoostInput) {
+        selectedBoostInput.value = `${duration} - KES ${price} (${reach.toLocaleString()} reach)`;
+    }
+    document.getElementById('boostFormSection').classList.remove('hidden');
+}
+
+function submitBoost() {
+    const productId = document.getElementById('boostProductSelect').value;
+    const code = document.getElementById('boostPaymentCode').value;
+    
+    if (!productId || !code) {
+        showNotification('Please select product and enter payment code', 'error');
+        return;
+    }
+    
+    const product = sellerProducts.find(p => p.id == productId);
+    if (product) {
+        product.boosted = true;
+        product.boostExpiry = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString();
+        
+        localStorage.setItem('sellerProducts', JSON.stringify(sellerProducts));
+        localStorage.setItem('sellerProducts_' + currentSeller.id, JSON.stringify(sellerProducts));
+    }
+    
+    document.getElementById('boostFormSection').classList.add('hidden');
+    document.getElementById('boostPaymentCode').value = '';
+    showNotification('Boost activated! Your product will reach more buyers.', 'success');
+    updateDashboard();
+}
+
+// ==========================================
+// INBOX
+// ==========================================
+function renderInbox() {
+    const list = document.getElementById('inboxList');
+    if (!list) return;
+    
+    const messages = [
+        { sender: 'Admin', subject: 'Welcome to ReSell Kenya!', preview: 'Your seller account is now active. Start listing...', time: 'Just now', unread: true },
+        { sender: 'System', subject: 'Weekly Upload Limit', preview: 'You have 2 uploads remaining this week.', time: '1 hour ago', unread: true },
+        { sender: 'Tips', subject: 'Increase Your Sales', preview: 'Products with clear images sell 3x faster...', time: '1 day ago', unread: false }
+    ];
+    
+    list.innerHTML = '';
+    let unreadCount = 0;
+    
+    messages.forEach(msg => {
+        if (msg.unread) unreadCount++;
+        const item = document.createElement('div');
+        item.className = 'inbox-item ' + (msg.unread ? 'unread' : '');
+        item.innerHTML = `
+            <div class="inbox-sender">${msg.sender}</div>
+            <div class="inbox-subject">${msg.subject}</div>
+            <div class="inbox-preview">${msg.preview}</div>
+            <div class="inbox-time">${msg.time}</div>
+        `;
+        list.appendChild(item);
+    });
+    
+    const badge = document.getElementById('inboxBadge');
+    if (badge) {
+        if (unreadCount > 0) {
+            badge.textContent = unreadCount;
+            badge.style.display = 'inline';
+        } else {
+            badge.style.display = 'none';
+        }
+    }
+}
+
+// ==========================================
+// NOTEBOOK
+// ==========================================
+function loadNotes() {
+    const notes = localStorage.getItem('sellerNotes_' + (currentSeller ? currentSeller.id : '')) || '';
+    const textarea = document.getElementById('sellerNotes');
+    if (textarea) textarea.value = notes;
+}
+
+function saveNotes() {
+    const notes = document.getElementById('sellerNotes').value;
+    localStorage.setItem('sellerNotes_' + (currentSeller ? currentSeller.id : ''), notes);
+    showNotification('Notes saved!', 'success');
+}
+
+// ==========================================
+// SUSPENSION APPEAL
+// ==========================================
+function showAppeal() {
+    document.getElementById('appealForm').classList.remove('hidden');
+}
+
+function submitAppeal() {
+    const text = document.getElementById('appealText').value;
+    if (!text) {
+        showNotification('Please enter your explanation', 'error');
+        return;
+    }
+    showNotification('Appeal submitted! Admin will review within 48 hours.', 'success');
+    document.getElementById('appealForm').classList.add('hidden');
+    document.getElementById('appealText').value = '';
+}
+
+// ==========================================
+// UTILITIES
+// ==========================================
+function closeModal(id) {
+    const modal = document.getElementById(id);
+    if (modal) modal.classList.remove('active');
+}
+
+function showNotification(message, type = 'success') {
+    const notif = document.getElementById('notification');
+    if (!notif) return;
+    
+    notif.textContent = message;
+    notif.className = 'notification ' + type + ' show';
+    
+    setTimeout(() => {
+        notif.classList.remove('show');
+    }, 3000);
+}
+
+function contactAdmin() {
+    window.location.href = 'mailto:globalventures809@gmail.com';
+}
+
+function logout() {
+    if (confirm('Logout?')) {
+        localStorage.removeItem('currentSeller');
+        localStorage.removeItem('sellerProducts');
+        currentSeller = null;
+        sellerProducts = [];
+        location.reload();
+    }
+}
+
+function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Close modals on outside click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+    overlay.addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.classList.remove('active');
+        }
+    });
+});
+</script>
+
+    <script type="module">
+        // Seller realtime: listen for product updates related to current seller
+        import { subscribeToSellerProducts, subscribeToTable } from '/supabase/api.js';
+
+        const current = JSON.parse(localStorage.getItem('currentSeller') || 'null');
+        if (current && current.id) {
+            const sub = subscribeToSellerProducts(current.id, (payload) => {
+                const event = payload.event || payload.eventType || payload.type;
+                const record = payload.record || payload.new || payload.payload || payload;
+                // If a new product was added by this seller, reload list
+                if (String(event).toUpperCase().includes('INSERT')) {
+                    sellerProducts.push(record);
+                    renderProducts();
+                    showNotification('Your new product is live!', 'success');
+                }
+                // Handle updates/deletes
+                if (String(event).toUpperCase().includes('UPDATE')) {
+                    const idx = sellerProducts.findIndex(p => p.id === record.id || p.id == record.id);
+                    if (idx > -1) {
+                        sellerProducts[idx] = {...sellerProducts[idx], ...record};
+                        renderProducts();
+                        showNotification('A product was updated', 'success');
+                    }
+                }
+                if (String(event).toUpperCase().includes('DELETE')) {
+                    sellerProducts = sellerProducts.filter(p => p.id !== record.id && p.id != record.id);
+                    renderProducts();
+                    showNotification('A product was removed', 'error');
+                }
+            });
+
+            window.__supabase_seller_sub = sub;
+        }
+        // Also subscribe to a notifications table (if you create one)
+        if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) {
+            subscribeToTable('notifications', (payload) => {
+                const record = payload.record || payload.new || payload.payload || payload;
+                // Show transient admin notifications
+                if (record && record.message) {
+                    showNotification(record.message, 'success');
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>

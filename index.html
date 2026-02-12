@@ -1,0 +1,2229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ReSell Kenya - Premium Second Hand Marketplace</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="seller/styles.css">
+    <style>
+        /* ============================================
+           CSS VARIABLES & RESET
+           ============================================ */
+        :root {
+            --primary: #1a5f2a;
+            --primary-light: #2d8a3e;
+            --secondary: #f4a261;
+            --accent: #e76f51;
+            --dark: #1a1a1a;
+            --light: #f8f9fa;
+            --gray: #6c757d;
+            --border: #e0e0e0;
+            --shadow: 0 2px 8px rgba(0,0,0,0.1);
+            --shadow-hover: 0 4px 16px rgba(0,0,0,0.15);
+            --radius: 8px;
+            --radius-sm: 4px;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* ============================================
+           UTILITY CLASSES
+           ============================================ */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 12px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px 16px;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            text-decoration: none;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-light);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+        }
+
+        .btn-email {
+            background: #ea4335;
+            color: white;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1.5px solid var(--primary);
+            color: var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-danger {
+            background: var(--accent);
+            color: white;
+        }
+
+        .btn-sm {
+            padding: 6px 10px;
+            font-size: 11px;
+        }
+
+        /* ============================================
+           MAINTENANCE BANNER
+           ============================================ */
+        .maintenance-banner {
+            background: linear-gradient(90deg, #ff6b6b, #ee5a24);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-weight: 600;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: none;
+        }
+
+        .maintenance-banner.active {
+            display: block;
+        }
+
+        /* ============================================
+           HEADER & NAVIGATION
+           ============================================ */
+        .header {
+            background: white;
+            box-shadow: var(--shadow);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 0;
+            gap: 12px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            flex-shrink: 0;
+        }
+
+        .logo-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            border-radius: var(--radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+            font-size: 18px;
+        }
+
+        .logo-text {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo-main {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            line-height: 1;
+        }
+
+        .logo-sub {
+            font-size: 9px;
+            color: var(--gray);
+            letter-spacing: 0.5px;
+        }
+
+        .search-container {
+            flex: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px 36px 8px 14px;
+            border: 1.5px solid var(--border);
+            border-radius: 20px;
+            font-size: 13px;
+            transition: var(--transition);
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .search-btn {
+            position: absolute;
+            right: 4px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--primary);
+            color: white;
+            border: none;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--dark);
+        }
+
+        .nav {
+            background: var(--primary);
+            color: white;
+        }
+
+        .nav-content {
+            display: flex;
+            gap: 0;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+
+        .nav-content::-webkit-scrollbar {
+            display: none;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 12px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            white-space: nowrap;
+            transition: var(--transition);
+            border-bottom: 2px solid transparent;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            border-bottom-color: var(--secondary);
+        }
+
+        /* ============================================
+           HERO SECTION
+           ============================================ */
+        .hero {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            padding: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 50%;
+        }
+
+        .hero h1 {
+            font-size: 24px;
+            margin-bottom: 8px;
+            font-weight: 700;
+            position: relative;
+        }
+
+        .hero p {
+            opacity: 0.9;
+            max-width: 500px;
+            margin: 0 auto;
+            font-size: 14px;
+            position: relative;
+        }
+
+        /* ============================================
+           QUICK STATS BAR
+           ============================================ */
+        .stats-bar {
+            background: white;
+            border-bottom: 1px solid var(--border);
+            padding: 12px 0;
+            display: flex;
+            justify-content: space-around;
+            text-align: center;
+            font-size: 12px;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .stat-number {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 10px;
+        }
+
+        /* ============================================
+           SECTIONS
+           ============================================ */
+        .section {
+            padding: 24px 0;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .section-badge {
+            background: var(--secondary);
+            color: var(--dark);
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+        }
+
+        /* ============================================
+           PRODUCT GRID - SMALLER CARDS
+           ============================================ */
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        @media (min-width: 480px) {
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .products-grid {
+                grid-template-columns: repeat(5, 1fr);
+            }
+        }
+
+        /* Product Card - Compact */
+        .product-card {
+            background: white;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .product-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--accent);
+            color: white;
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .product-badge.verified {
+            background: var(--primary);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 100px;
+            object-fit: cover;
+            background: var(--light);
+        }
+
+        .product-body {
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-name {
+            font-size: 11px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 28px;
+        }
+
+        .product-meta {
+            font-size: 10px;
+            color: var(--gray);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .product-price {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 4px 0;
+        }
+
+        .product-location {
+            font-size: 9px;
+            color: var(--gray);
+            margin-bottom: 6px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .product-actions {
+            margin-top: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .btn-contact-seller {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px;
+            font-size: 10px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            width: 100%;
+            font-weight: 600;
+        }
+
+        .btn-report-mini {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            padding: 4px;
+            font-size: 9px;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            width: 100%;
+        }
+
+        /* ============================================
+           SPONSORED SECTION - AUTO SCROLL
+           ============================================ */
+        .sponsored-section {
+            background: white;
+            border-top: 1px solid var(--border);
+            border-bottom: 1px solid var(--border);
+            overflow: hidden;
+        }
+
+        .sponsored-wrapper {
+            position: relative;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .sponsored-scroll {
+            display: flex;
+            gap: 10px;
+            animation: scroll 20s linear infinite;
+            width: max-content;
+        }
+
+        .sponsored-scroll:hover {
+            animation-play-state: paused;
+        }
+
+        @keyframes scroll {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .sponsored-card {
+            flex: 0 0 120px;
+            background: white;
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            box-shadow: var(--shadow);
+            border: 2px solid var(--secondary);
+            position: relative;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .sponsored-card:hover {
+            transform: scale(1.05);
+        }
+
+        .sponsored-badge {
+            position: absolute;
+            top: 4px;
+            left: 4px;
+            background: var(--secondary);
+            color: var(--dark);
+            font-size: 8px;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 4px;
+            z-index: 2;
+        }
+
+        .sponsored-card img {
+            width: 100%;
+            height: 80px;
+            object-fit: cover;
+        }
+
+        .sponsored-info {
+            padding: 6px;
+        }
+
+        .sponsored-info h4 {
+            font-size: 10px;
+            font-weight: 600;
+            margin-bottom: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .sponsored-info p {
+            font-size: 9px;
+            color: var(--gray);
+        }
+
+        /* ============================================
+           BUYER NOTEBOOK
+           ============================================ */
+        .notebook-section {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .notebook-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        @media (min-width: 640px) {
+            .notebook-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .notebook-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 16px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .notebook-card h3 {
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .notebook-card ul {
+            list-style: none;
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .notebook-card li {
+            padding-left: 16px;
+            position: relative;
+        }
+
+        .notebook-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: var(--secondary);
+            font-weight: 700;
+        }
+
+        /* ============================================
+           MODALS
+           ============================================ */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 16px;
+            opacity: 0;
+            visibility: hidden;
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal {
+            background: white;
+            border-radius: var(--radius);
+            width: 100%;
+            max-width: 400px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: scale(0.9);
+            transition: var(--transition);
+        }
+
+        .modal-overlay.active .modal {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--light);
+        }
+
+        .modal-title {
+            font-size: 16px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: var(--gray);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: var(--border);
+            color: var(--dark);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .form-group {
+            margin-bottom: 12px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--dark);
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-family: inherit;
+            transition: var(--transition);
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            width: 100%;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        .file-input-label {
+            display: block;
+            padding: 10px;
+            border: 2px dashed var(--border);
+            border-radius: var(--radius-sm);
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 12px;
+            color: var(--gray);
+        }
+
+        .file-input-label:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* ============================================
+           CONTACT SECTION
+           ============================================ */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+        }
+
+        @media (min-width: 640px) {
+            .contact-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        .contact-card {
+            background: white;
+            padding: 20px;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            text-align: center;
+        }
+
+        .contact-icon {
+            width: 48px;
+            height: 48px;
+            background: var(--light);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+        }
+
+        .contact-card h3 {
+            font-size: 16px;
+            margin-bottom: 6px;
+        }
+
+        .contact-card p {
+            font-size: 13px;
+            color: var(--gray);
+            margin-bottom: 12px;
+        }
+
+        /* ============================================
+           PRODUCT DETAILS MODAL
+           ============================================ */
+        .product-detail-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: var(--radius-sm);
+            margin-bottom: 16px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid var(--border);
+            font-size: 13px;
+        }
+
+        .detail-label {
+            color: var(--gray);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        .contact-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 16px;
+        }
+
+        /* ============================================
+           SUGGESTIONS SECTION
+           ============================================ */
+        .suggestions-section {
+            background: white;
+            border-top: 1px solid var(--border);
+        }
+
+        .suggestions-scroll {
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+        }
+
+        .suggestions-scroll::-webkit-scrollbar {
+            display: none;
+        }
+
+        .suggestion-chip {
+            flex: 0 0 auto;
+            background: var(--light);
+            border: 1px solid var(--border);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .suggestion-chip:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        /* ============================================
+           FOOTER
+           ============================================ */
+        .footer {
+            background: var(--dark);
+            color: white;
+            padding: 32px 0 16px;
+            margin-top: 32px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 640px) {
+            .footer-content {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 768px) {
+            .footer-content {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .footer-section h4 {
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: var(--secondary);
+        }
+
+        .footer-section p, .footer-section a {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+            text-decoration: none;
+            line-height: 1.6;
+        }
+
+        .footer-section a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 16px;
+            text-align: center;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* ============================================
+           RESPONSIVE DESIGN
+           ============================================ */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-wrap: wrap;
+            }
+
+            .search-container {
+                order: 3;
+                flex-basis: 100%;
+                max-width: none;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .nav-content {
+                position: fixed;
+                top: 0;
+                right: -100%;
+                width: 70%;
+                max-width: 260px;
+                height: 100vh;
+                background: var(--primary);
+                flex-direction: column;
+                padding-top: 60px;
+                transition: var(--transition);
+                z-index: 998;
+            }
+
+            .nav-content.active {
+                right: 0;
+            }
+
+            .nav-link {
+                border-bottom: 1px solid rgba(255,255,255,0.1);
+                padding: 14px 20px;
+            }
+
+            .hero h1 {
+                font-size: 20px;
+            }
+        }
+
+        /* ============================================
+           LOADING & EMPTY STATES
+           ============================================ */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--gray);
+            grid-column: 1 / -1;
+        }
+
+        .empty-state-icon {
+            font-size: 40px;
+            margin-bottom: 12px;
+            opacity: 0.5;
+        }
+
+        /* ============================================
+           NOTIFICATION
+           ============================================ */
+        .notification {
+            position: fixed;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: var(--dark);
+            color: white;
+            padding: 10px 20px;
+            border-radius: var(--radius);
+            font-size: 13px;
+            z-index: 3000;
+            opacity: 0;
+            transition: var(--transition);
+            box-shadow: var(--shadow-hover);
+            text-align: center;
+            max-width: 90%;
+        }
+
+        .notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        .notification.success {
+            background: var(--primary);
+        }
+
+        .notification.error {
+            background: var(--accent);
+        }
+
+        /* ============================================
+           FEATURED TAGS
+           ============================================ */
+        .tags-container {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .tag {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+        }
+
+        /* ============================================
+           TRUST BADGES
+           ============================================ */
+        .trust-badges {
+            display: flex;
+            justify-content: space-around;
+            padding: 16px;
+            background: white;
+            margin: 16px 0;
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+        }
+
+        .trust-item {
+            text-align: center;
+            font-size: 11px;
+        }
+
+        .trust-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        /* ============================================
+           QUICK ACTIONS FLOAT
+           ============================================ */
+        .quick-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .float-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            background: var(--primary);
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
+            box-shadow: var(--shadow-hover);
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .float-btn:hover {
+            transform: scale(1.1);
+        }
+
+        .float-btn.secondary {
+            background: var(--secondary);
+            color: var(--dark);
+        }
+
+        /* ============================================
+           COMPARE BAR
+           ============================================ */
+        .compare-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+            padding: 12px;
+            transform: translateY(100%);
+            transition: var(--transition);
+            z-index: 999;
+        }
+
+        .compare-bar.active {
+            transform: translateY(0);
+        }
+
+        .compare-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .compare-items {
+            display: flex;
+            gap: 8px;
+        }
+
+        .compare-thumb {
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 2px solid var(--primary);
+        }
+    </style>
+<base target="_blank">
+</head>
+<body>
+
+    <!-- Maintenance Banner -->
+    <div id="maintenanceBanner" class="maintenance-banner">
+        ⚠️ System Maintenance in Progress - Some features may be limited
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" onclick="showSection('home')">
+                    <div class="logo-icon">RK</div>
+                    <div class="logo-text">
+                        <span class="logo-main">ReSell Kenya</span>
+                        <span class="logo-sub">PREMIUM MARKETPLACE</span>
+                    </div>
+                </a>
+
+                <div class="search-container">
+                    <input type="text" id="searchInput" class="search-input" placeholder="Search products, sellers, locations..." autocomplete="off">
+                    <button class="search-btn" onclick="performSearch()">🔍</button>
+                </div>
+
+                <button class="menu-toggle" onclick="toggleMobileMenu()">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Navigation -->
+    <nav class="nav">
+        <div class="container">
+            <div class="nav-content" id="mobileNav">
+                <a href="index.html" class="nav-link active">🏠 Products</a>
+                <a href="index.html" class="nav-link">✨ New</a>
+                <a href="seller.html" class="nav-link">👤 Sell</a>
+                <a href="seller/seller-dashboard.html" class="nav-link">📊 Dashboard</a>
+                <a href="seller/seller-verification.html" class="nav-link">🔒 Verification</a>
+                <a href="seller/seller-boost.html" class="nav-link">🚀 Boost</a>
+                <a href="#" class="nav-link" onclick="showSection('notebook')">📓 Guide</a>
+                <a href="#" class="nav-link" onclick="showSection('contact')">📞 Help</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" id="heroSection">
+        <div class="container">
+            <h1>Buy & Sell in Kenya</h1>
+            <p>Safe, local marketplace with verified sellers</p>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <div class="stats-bar">
+        <div class="stat-item">
+            <span class="stat-number" id="statListings">1,240</span>
+            <span class="stat-label">Active Listings</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" id="statSellers">856</span>
+            <span class="stat-label">Verified Sellers</span>
+        </div>
+        <div class="stat-item">
+            <span class="stat-number" id="statCounties">47</span>
+            <span class="stat-label">Counties</span>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="container">
+        
+        <!-- Search Suggestions -->
+        <section class="section suggestions-section" id="suggestionsSection">
+            <div class="section-header">
+                <h2 class="section-title">🔥 Trending Searches</h2>
+            </div>
+            <div class="suggestions-scroll" id="suggestionsContainer">
+                <!-- Dynamic suggestions -->
+            </div>
+        </section>
+
+        <!-- Sponsored Ads - Auto Scroll -->
+        <section class="section sponsored-section" id="sponsoredSection">
+            <div class="section-header">
+                <h2 class="section-title">⭐ Sponsored</h2>
+            </div>
+            <div class="sponsored-wrapper">
+                <div class="sponsored-scroll" id="sponsoredContainer">
+                    <!-- Auto-scrolling sponsored items -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Trust Badges -->
+        <div class="trust-badges">
+            <div class="trust-item">
+                <div class="trust-icon">🛡️</div>
+                <div>Secure</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">✓</div>
+                <div>Verified</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">🔄</div>
+                <div>Return</div>
+            </div>
+            <div class="trust-item">
+                <div class="trust-icon">⚡</div>
+                <div>Fast</div>
+            </div>
+        </div>
+
+        <!-- Products Section -->
+        <section class="section" id="productsSection">
+            <div class="section-header">
+                <h2 class="section-title" id="productsTitle">🔥 Featured</h2>
+                <span class="section-badge" id="productCount">0 items</span>
+            </div>
+            <div class="products-grid" id="productsGrid">
+                <!-- Products injected here -->
+            </div>
+            <div id="noResults" class="empty-state hidden">
+                <div class="empty-state-icon">🔍</div>
+                <h3>No products found</h3>
+                <p>Try different search terms</p>
+            </div>
+        </section>
+
+        <!-- You May Also Like -->
+        <section class="section" id="recommendationsSection">
+            <div class="section-header">
+                <h2 class="section-title">💡 You May Also Like</h2>
+            </div>
+            <div class="products-grid" id="recommendationsGrid">
+                <!-- Recommendations injected here -->
+            </div>
+        </section>
+
+        <!-- Buyer Notebook Section -->
+        <section class="section notebook-section hidden" id="notebookSection">
+            <div class="container">
+                <div class="section-header">
+                    <h2 class="section-title" style="color: white;">📓 Buyer Notebook</h2>
+                </div>
+                <div class="notebook-grid">
+                    <div class="notebook-card">
+                        <h3>🛡️ Safety First</h3>
+                        <ul>
+                            <li>Meet in public places only</li>
+                            <li>Verify seller before payment</li>
+                            <li>Inspect items thoroughly</li>
+                            <li>Use escrow for high value</li>
+                            <li>Never share bank PIN</li>
+                            <li>Report scams immediately</li>
+                        </ul>
+                    </div>
+                    <div class="notebook-card">
+                        <h3>📋 Smart Buying</h3>
+                        <ul>
+                            <li>Compare prices online</li>
+                            <li>Check original receipts</li>
+                            <li>Test before paying</li>
+                            <li>Ask for warranty info</li>
+                            <li>Photo document condition</li>
+                            <li>Get written agreement</li>
+                        </ul>
+                    </div>
+                    <div class="notebook-card">
+                        <h3>⚖️ Your Rights</h3>
+                        <ul>
+                            <li>Accurate product info</li>
+                            <li>Safe transaction space</li>
+                            <li>Report fraud protection</li>
+                            <li>Privacy guaranteed</li>
+                            <li>Consumer Act protection</li>
+                            <li>Keep all records</li>
+                        </ul>
+                    </div>
+                    <div class="notebook-card">
+                        <h3>🚩 Warning Signs</h3>
+                        <ul>
+                            <li>Too cheap to be true</li>
+                            <li>Rush pressure tactics</li>
+                            <li>No physical meeting</li>
+                            <li>Upfront payment demands</li>
+                            <li>Fake photos/stock images</li>
+                            <li>Unwilling to negotiate</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="section hidden" id="contactSection">
+            <div class="section-header">
+                <h2 class="section-title">📞 Contact Admin</h2>
+            </div>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">✉️</div>
+                    <h3>Email Support</h3>
+                    <p>Get help within 24 hours</p>
+                    <button class="btn btn-email" onclick="contactAdmin('email')">Send Email</button>
+                </div>
+                <div class="contact-card">
+                    <div class="contact-icon">💬</div>
+                    <h3>WhatsApp Chat</h3>
+                    <p>Instant response</p>
+                    <button class="btn btn-whatsapp" onclick="contactAdmin('whatsapp')">Start Chat</button>
+                </div>
+            </div>
+            
+            <div style="margin-top: 24px; background: white; padding: 20px; border-radius: var(--radius); box-shadow: var(--shadow);">
+                <h3 style="margin-bottom: 16px; font-size: 16px;">Send Message</h3>
+                <form id="contactForm" onsubmit="handleContactSubmit(event)">
+                    <div class="form-group">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-input" required placeholder="Your name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" required placeholder="your@email.com">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-textarea" required placeholder="How can we help?" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Send Message</button>
+                </form>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4>About</h4>
+                    <p>Kenya's trusted second-hand marketplace connecting buyers with verified sellers.</p>
+                </div>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <p>
+                        <a href="#" onclick="showSection('home')">Browse</a><br>
+                        <a href="#" onclick="showSection('new')">New Arrivals</a><br>
+                        <a href="#" onclick="showSection('notebook')">Safety Guide</a><br>
+                        <a href="#" onclick="showSection('contact')">Support</a>
+                    </p>
+                </div>
+                <div class="footer-section">
+                    <h4>Legal</h4>
+                    <p>
+                        <a href="#">Terms of Use</a><br>
+                        <a href="#">Privacy Policy</a><br>
+                        <a href="#">Cookie Policy</a>
+                    </p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2024 ReSell Kenya. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Quick Float Buttons -->
+    <div class="quick-float">
+        <button class="float-btn" onclick="scrollToTop()" title="Back to Top">↑</button>
+        <button class="float-btn secondary" onclick="showSection('contact')" title="Help">?</button>
+    </div>
+
+    <!-- Compare Bar -->
+    <div class="compare-bar" id="compareBar">
+        <div class="compare-content">
+            <div class="compare-items" id="compareItems"></div>
+            <div>
+                <button class="btn btn-primary btn-sm" onclick="showComparison()">Compare</button>
+                <button class="btn btn-outline btn-sm" onclick="clearCompare()">Clear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product Detail Modal -->
+    <div class="modal-overlay" id="productModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Product Details</h3>
+                <button class="modal-close" onclick="closeModal('productModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="productDetailContent">
+                <!-- Dynamic content -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Report Modal -->
+    <div class="modal-overlay" id="reportModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Report Seller</h3>
+                <button class="modal-close" onclick="closeModal('reportModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="reportForm" onsubmit="handleReportSubmit(event)">
+                    <input type="hidden" id="reportProductId">
+                    <div class="form-group">
+                        <label class="form-label">Your Name</label>
+                        <input type="text" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Phone</label>
+                        <input type="tel" class="form-input" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Reason</label>
+                        <select class="form-select" required>
+                            <option value="">Select reason</option>
+                            <option value="scam">Scam/Fraud</option>
+                            <option value="fake">Fake Product</option>
+                            <option value="misleading">Misleading Info</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Evidence</label>
+                        <div class="file-input-wrapper">
+                            <input type="file" id="evidenceFile" accept="image/*">
+                            <label for="evidenceFile" class="file-input-label">📷 Upload Image</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-danger" style="width: 100%;">Submit Report</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seller Registration Modal -->
+    <div class="modal-overlay" id="sellerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Become a Seller</h3>
+                <button class="modal-close" onclick="closeModal('sellerModal')">&times;</button>
+            </div>
+            <div class="modal-body" style="text-align: center; padding: 32px 20px;">
+                <div style="font-size: 48px; margin-bottom: 16px;">🚀</div>
+                <h2 style="margin-bottom: 8px; color: var(--primary); font-size: 20px;">Coming Soon!</h2>
+                <p style="color: var(--gray); margin-bottom: 20px; font-size: 13px;">
+                    Join 500+ sellers on our waitlist. Get early access!
+                </p>
+                <form onsubmit="handleNotifyMe(event)">
+                    <div class="form-group">
+                        <input type="email" class="form-input" placeholder="Enter your email" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Notify Me</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
+
+    <!-- JavaScript -->
+    <script>
+        /* ============================================
+           CONFIGURATION
+           ============================================ */
+        const maintenanceMode = false;
+        const ADMIN_EMAIL = 'globalventures809@gmail.com';
+        const ADMIN_PHONE = '0718397891';
+        
+        /* ============================================
+           FEATURE 1: ENHANCED PRODUCT DATA
+           ============================================ */
+        const products = [
+            { id: 1, name: "iPhone 12 Pro 256GB", category: "Electronics", price: 65000, condition: "Used - Good", seller: "TechHub", verified: true, county: "Nairobi", constituency: "Westlands", image: "https://images.unsplash.com/photo-1605236453806-6ff36851218e?w=400&h=300&fit=crop", date: "2024-01-15", sponsored: true, views: 245, tags: ["Negotiable", "Warranty"] },
+            { id: 2, name: "Toyota Fielder 2015", category: "Vehicles", price: 850000, condition: "Used - Excellent", seller: "AutoMax", verified: true, county: "Mombasa", constituency: "Mvita", image: "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=400&h=300&fit=crop", date: "2024-01-14", sponsored: true, views: 189, tags: ["Inspection", "Logbook"] },
+            { id: 3, name: "Samsung 55\" 4K TV", category: "Electronics", price: 45000, condition: "Used - Like New", seller: "ElectroHub", verified: false, county: "Kiambu", constituency: "Ruiru", image: "https://images.unsplash.com/photo-1593359677879-a4bb92f829d1?w=400&h=300&fit=crop", date: "2024-01-13", sponsored: false, views: 134, tags: ["Remote", "Stand"] },
+            { id: 4, name: "Dining Set 6-Seater", category: "Furniture", price: 28000, condition: "Used - Good", seller: "FurniturePal", verified: true, county: "Nairobi", constituency: "Embakasi", image: "https://images.unsplash.com/photo-1617806118233-18e1de247200?w=400&h=300&fit=crop", date: "2024-01-12", sponsored: false, views: 98, tags: ["Mahogany", "Delivery"] },
+            { id: 5, name: "PlayStation 5 + Games", category: "Gaming", price: 72000, condition: "Used - Excellent", seller: "GameZone", verified: true, county: "Nairobi", constituency: "Kasarani", image: "https://images.unsplash.com/photo-1606813907291-d86efa9b94db?w=400&h=300&fit=crop", date: "2024-01-11", sponsored: true, views: 312, tags: ["2 Controllers", "FIFA 24"] },
+            { id: 6, name: "HP EliteBook G6", category: "Computers", price: 38000, condition: "Refurbished", seller: "CompuWorld", verified: false, county: "Kisumu", constituency: "Central", image: "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400&h=300&fit=crop", date: "2024-01-10", sponsored: false, views: 167, tags: ["8GB RAM", "SSD"] },
+            { id: 7, name: "Trek Mountain Bike", category: "Sports", price: 35000, condition: "Used - Good", seller: "CycleKenya", verified: true, county: "Nakuru", constituency: "West", image: "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?w=400&h=300&fit=crop", date: "2024-01-09", sponsored: false, views: 76, tags: ["Helmet", "Lock"] },
+            { id: 8, name: "Double Door Fridge 420L", category: "Appliances", price: 42000, condition: "Used - Fair", seller: "HomeApp", verified: false, county: "Machakos", constituency: "Town", image: "https://images.unsplash.com/photo-1571175443880-49e1d58b794a?w=400&h=300&fit=crop", date: "2024-01-08", sponsored: false, views: 112, tags: ["Frost Free", "Dispenser"] },
+            { id: 9, name: "Canon EOS 80D Camera", category: "Electronics", price: 55000, condition: "Used - Excellent", seller: "PhotoPro", verified: true, county: "Nairobi", constituency: "Kilimani", image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=300&fit=crop", date: "2024-01-07", sponsored: false, views: 203, tags: ["Lens", "Bag"] },
+            { id: 10, name: "Sofa Set L-Shape", category: "Furniture", price: 45000, condition: "Used - Good", seller: "ComfortHome", verified: true, county: "Nairobi", constituency: "Karen", image: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=400&h=300&fit=crop", date: "2024-01-06", sponsored: false, views: 145, tags: ["Fabric", "Throw Pillows"] },
+            { id: 11, name: "Nike Air Max 90", category: "Fashion", price: 4500, condition: "New", seller: "SneakerHead", verified: false, county: "Mombasa", constituency: "Nyali", image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=400&h=300&fit=crop", date: "2024-01-05", sponsored: true, views: 89, tags: ["Original", "Box"] },
+            { id: 12, name: "Generator 5KVA", category: "Appliances", price: 65000, condition: "Used - Excellent", seller: "PowerMax", verified: true, county: "Nakuru", constituency: "East", image: "https://images.unsplash.com/photo-1619641222279-6f7d3d7d3f2d?w=400&h=300&fit=crop", date: "2024-01-04", sponsored: false, views: 67, tags: ["Silent", "Service"] }
+        ];
+
+        /* ============================================
+           FEATURE 2: STATE MANAGEMENT
+           ============================================ */
+        let currentProducts = [...products];
+        let compareList = [];
+        let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+        let recentViews = JSON.parse(localStorage.getItem('recentViews')) || [];
+        let searchHistory = JSON.parse(localStorage.getItem('searchHistory')) || [];
+
+        /* ============================================
+           FEATURE 3: INITIALIZATION
+           ============================================ */
+        document.addEventListener('DOMContentLoaded', function() {
+            initApp();
+        });
+
+        function initApp() {
+            if (maintenanceMode) {
+                document.getElementById('maintenanceBanner').classList.add('active');
+            }
+
+            renderProducts(currentProducts, 'productsGrid');
+            renderSponsored();
+            renderSuggestions();
+            renderRecommendations();
+            updateStats();
+            setupEventListeners();
+            setupLazyLoading();
+        }
+
+        /* ============================================
+           FEATURE 4: COMPACT PRODUCT CARDS
+           ============================================ */
+        function renderProducts(productList, containerId, isRecommendation = false) {
+            const grid = document.getElementById(containerId);
+            const count = document.getElementById('productCount');
+            const noResults = document.getElementById('noResults');
+
+            if (!isRecommendation) {
+                grid.innerHTML = '';
+                if (count) count.textContent = `${productList.length} items`;
+                
+                if (productList.length === 0) {
+                    noResults.classList.remove('hidden');
+                    return;
+                } else {
+                    noResults.classList.add('hidden');
+                }
+            }
+
+            productList.forEach(product => {
+                const card = createCompactCard(product);
+                grid.appendChild(card);
+            });
+        }
+
+        function createCompactCard(product) {
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            const isWishlisted = wishlist.includes(product.id);
+            const verifiedBadge = product.verified ? `<span class="product-badge verified">✓</span>` : '';
+            const tagsHtml = product.tags.map(tag => `<span class="tag">${tag}</span>`).join('');
+            
+            card.innerHTML = `
+                ${verifiedBadge}
+                <img data-src="${product.image}" 
+                     src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 300'%3E%3Crect fill='%23f0f0f0' width='400' height='300'/%3E%3C/svg%3E" 
+                     alt="${product.name}" 
+                     class="product-image lazy-image"
+                     onclick="viewProductDetail(${product.id})">
+                <div class="product-body">
+                    <div class="tags-container">${tagsHtml}</div>
+                    <div class="product-name">${product.name}</div>
+                    <div class="product-price">KSh ${product.price.toLocaleString()}</div>
+                    <div class="product-meta">
+                        <span>${product.condition}</span>
+                        <span>•</span>
+                        <span>${product.county}</span>
+                    </div>
+                    <div class="product-location">${product.constituency}</div>
+                    <div class="product-actions">
+                        <button class="btn-contact-seller" onclick="showContactOptions(${product.id})">Contact Seller</button>
+                        <button class="btn-report-mini" onclick="openReportModal(${product.id})">Report</button>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        /* ============================================
+           FEATURE 5: AUTO-SCROLLING SPONSORED ADS
+           ============================================ */
+        function renderSponsored() {
+            const container = document.getElementById('sponsoredContainer');
+            const sponsored = products.filter(p => p.sponsored);
+            
+            // Triple the items for seamless infinite scroll
+            const items = [...sponsored, ...sponsored, ...sponsored];
+            
+            container.innerHTML = '';
+            
+            items.forEach((product, index) => {
+                const card = document.createElement('div');
+                card.className = 'sponsored-card';
+                card.onclick = () => viewProductDetail(product.id);
+                card.innerHTML = `
+                    <span class="sponsored-badge">AD</span>
+                    <img src="${product.image}" alt="${product.name}" loading="lazy">
+                    <div class="sponsored-info">
+                        <h4>${product.name}</h4>
+                        <p>KSh ${product.price.toLocaleString()}</p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* ============================================
+           FEATURE 6: SMART SEARCH SUGGESTIONS
+           ============================================ */
+        function renderSuggestions() {
+            const container = document.getElementById('suggestionsContainer');
+            const suggestions = ['iPhone', 'Toyota', 'Furniture', 'Laptop', 'Nairobi', 'Mombasa', 'Electronics', 'Under 50K'];
+            
+            container.innerHTML = '';
+            suggestions.forEach(suggestion => {
+                const chip = document.createElement('div');
+                chip.className = 'suggestion-chip';
+                chip.textContent = suggestion;
+                chip.onclick = () => {
+                    document.getElementById('searchInput').value = suggestion;
+                    performSearch(suggestion);
+                };
+                container.appendChild(chip);
+            });
+        }
+
+        /* ============================================
+           FEATURE 7: PRODUCT RECOMMENDATIONS
+           ============================================ */
+        function renderRecommendations() {
+            // Show random products different from current view
+            const shuffled = [...products].sort(() => 0.5 - Math.random());
+            const recommendations = shuffled.slice(0, 4);
+            renderProducts(recommendations, 'recommendationsGrid', true);
+        }
+
+        /* ============================================
+           FEATURE 8: PRODUCT DETAIL VIEW
+           ============================================ */
+        function viewProductDetail(productId) {
+            const product = products.find(p => p.id === productId);
+            if (!product) return;
+            
+            // Add to recent views
+            if (!recentViews.includes(productId)) {
+                recentViews.unshift(productId);
+                if (recentViews.length > 10) recentViews.pop();
+                localStorage.setItem('recentViews', JSON.stringify(recentViews));
+            }
+            
+            const modal = document.getElementById('productModal');
+            const content = document.getElementById('productDetailContent');
+            
+            content.innerHTML = `
+                <img src="${product.image}" class="product-detail-image" alt="${product.name}">
+                <div class="detail-row">
+                    <span class="detail-label">Product</span>
+                    <span class="detail-value">${product.name}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Price</span>
+                    <span class="detail-value" style="color: var(--primary);">KSh ${product.price.toLocaleString()}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Condition</span>
+                    <span class="detail-value">${product.condition}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Location</span>
+                    <span class="detail-value">${product.county}, ${product.constituency}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Seller</span>
+                    <span class="detail-value">${product.verified ? '✓ ' : ''}${product.seller}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Posted</span>
+                    <span class="detail-value">${formatDate(product.date)}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Views</span>
+                    <span class="detail-value">${product.views}</span>
+                </div>
+                <div style="margin-top: 16px;">
+                    <div style="font-size: 12px; color: var(--gray); margin-bottom: 8px;">Tags: ${product.tags.join(', ')}</div>
+                </div>
+                <div class="contact-options">
+                    <button class="btn btn-whatsapp" onclick="contactSeller('${ADMIN_PHONE}', 'whatsapp', ${product.id})">
+                        💬 WhatsApp
+                    </button>
+                    <button class="btn btn-email" onclick="contactSeller('${ADMIN_EMAIL}', 'email', ${product.id})">
+                        ✉️ Email
+                    </button>
+                </div>
+                <button class="btn btn-outline" style="width: 100%; margin-top: 10px;" onclick="addToCompare(${product.id})">
+                    ⚖️ Compare
+                </button>
+            `;
+            
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        /* ============================================
+           FEATURE 9: CONTACT OPTIONS (NO RAW DETAILS)
+           ============================================ */
+        function showContactOptions(productId) {
+            viewProductDetail(productId);
+        }
+
+        function contactSeller(contact, method, productId) {
+            const product = products.find(p => p.id === productId);
+            const message = `Hi, I'm interested in your ${product.name} (KSh ${product.price.toLocaleString()}) on ReSell Kenya. Is it still available?`;
+            
+            if (method === 'whatsapp') {
+                window.open(`https://wa.me/254${contact.substring(1)}?text=${encodeURIComponent(message)}`, '_blank');
+            } else {
+                window.location.href = `mailto:${contact}?subject=Interest in ${product.name}&body=${encodeURIComponent(message)}`;
+            }
+        }
+
+        function contactAdmin(method) {
+            if (method === 'whatsapp') {
+                window.open(`https://wa.me/254${ADMIN_PHONE.substring(1)}`, '_blank');
+            } else {
+                window.location.href = `mailto:${ADMIN_EMAIL}`;
+            }
+        }
+
+        /* ============================================
+           FEATURE 10: SEARCH WITH HISTORY
+           ============================================ */
+        function setupEventListeners() {
+            const searchInput = document.getElementById('searchInput');
+            
+            searchInput.addEventListener('input', debounce(function(e) {
+                const query = e.target.value.trim();
+                if (query) {
+                    performSearch(query);
+                } else {
+                    currentProducts = [...products];
+                    renderProducts(currentProducts, 'productsGrid');
+                }
+            }, 300));
+            
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    const query = e.target.value.trim();
+                    if (query && !searchHistory.includes(query)) {
+                        searchHistory.unshift(query);
+                        if (searchHistory.length > 5) searchHistory.pop();
+                        localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+                    }
+                }
+            });
+        }
+
+        function performSearch(query) {
+            const lowerQuery = query.toLowerCase();
+            currentProducts = products.filter(product => {
+                return product.name.toLowerCase().includes(lowerQuery) ||
+                       product.seller.toLowerCase().includes(lowerQuery) ||
+                       product.county.toLowerCase().includes(lowerQuery) ||
+                       product.constituency.toLowerCase().includes(lowerQuery) ||
+                       product.category.toLowerCase().includes(lowerQuery);
+            });
+            
+            renderProducts(currentProducts, 'productsGrid');
+            document.getElementById('productsTitle').innerHTML = `🔍 "${query}"`;
+            
+            // Update suggestions based on search
+            updateSuggestions(query);
+        }
+
+        function updateSuggestions(query) {
+            // Dynamic suggestion update based on search
+        }
+
+        /* ============================================
+           FEATURE 11: COMPARE PRODUCTS
+           ============================================ */
+        function addToCompare(productId) {
+            if (compareList.includes(productId)) {
+                showNotification('Already in compare list', 'error');
+                return;
+            }
+            
+            if (compareList.length >= 3) {
+                showNotification('Compare max 3 items', 'error');
+                return;
+            }
+            
+            compareList.push(productId);
+            updateCompareBar();
+            showNotification('Added to compare', 'success');
+            closeModal('productModal');
+        }
+
+        function updateCompareBar() {
+            const bar = document.getElementById('compareBar');
+            const container = document.getElementById('compareItems');
+            
+            if (compareList.length === 0) {
+                bar.classList.remove('active');
+                return;
+            }
+            
+            container.innerHTML = '';
+            compareList.forEach(id => {
+                const product = products.find(p => p.id === id);
+                const img = document.createElement('img');
+                img.src = product.image;
+                img.className = 'compare-thumb';
+                img.onclick = () => removeFromCompare(id);
+                container.appendChild(img);
+            });
+            
+            bar.classList.add('active');
+        }
+
+        function removeFromCompare(productId) {
+            compareList = compareList.filter(id => id !== productId);
+            updateCompareBar();
+        }
+
+        function clearCompare() {
+            compareList = [];
+            updateCompareBar();
+        }
+
+        function showComparison() {
+            if (compareList.length < 2) {
+                showNotification('Add at least 2 items', 'error');
+                return;
+            }
+            
+            let html = '<div style="overflow-x: auto;"><table style="width: 100%; font-size: 12px;">';
+            html += '<tr><th>Feature</th>';
+            
+            compareList.forEach(id => {
+                const p = products.find(x => x.id === id);
+                html += `<th>${p.name}</th>`;
+            });
+            html += '</tr>';
+            
+            ['price', 'condition', 'county', 'seller'].forEach(attr => {
+                html += `<tr><td style="font-weight: 600;">${attr}</td>`;
+                compareList.forEach(id => {
+                    const p = products.find(x => x.id === id);
+                    html += `<td>${attr === 'price' ? 'KSh ' + p[attr].toLocaleString() : p[attr]}</td>`;
+                });
+                html += '</tr>';
+            });
+            
+            html += '</table></div>';
+            
+            const modal = document.getElementById('productModal');
+            document.getElementById('productDetailContent').innerHTML = html;
+            modal.classList.add('active');
+        }
+
+        /* ============================================
+           FEATURE 12: WISHLIST
+           ============================================ */
+        function toggleWishlist(productId) {
+            const index = wishlist.indexOf(productId);
+            if (index > -1) {
+                wishlist.splice(index, 1);
+                showNotification('Removed from wishlist', 'success');
+            } else {
+                wishlist.push(productId);
+                showNotification('Added to wishlist', 'success');
+            }
+            localStorage.setItem('wishlist', JSON.stringify(wishlist));
+        }
+
+        /* ============================================
+           FEATURE 13: REPORT SYSTEM
+           ============================================ */
+        function openReportModal(productId) {
+            document.getElementById('reportProductId').value = productId;
+            document.getElementById('reportModal').classList.add('active');
+        }
+
+        function handleReportSubmit(e) {
+            e.preventDefault();
+            closeModal('reportModal');
+            showNotification('Report sent for review', 'success');
+            e.target.reset();
+        }
+
+        /* ============================================
+           FEATURE 14: SELLER REGISTRATION
+           ============================================ */
+        function showSellerRegistration() {
+            document.getElementById('sellerModal').classList.add('active');
+        }
+
+        function handleNotifyMe(e) {
+            e.preventDefault();
+            closeModal('sellerModal');
+            showNotification('You will be notified!', 'success');
+        }
+
+        /* ============================================
+           FEATURE 15: CONTACT FORM
+           ============================================ */
+        function handleContactSubmit(e) {
+            e.preventDefault();
+            showNotification('Message sent to admin!', 'success');
+            e.target.reset();
+        }
+
+        /* ============================================
+           FEATURE 16: NAVIGATION & SECTIONS
+           ============================================ */
+        function showSection(section) {
+            document.getElementById('productsSection').classList.add('hidden');
+            document.getElementById('notebookSection').classList.add('hidden');
+            document.getElementById('contactSection').classList.add('hidden');
+            document.getElementById('sponsoredSection').classList.remove('hidden');
+            document.getElementById('heroSection').classList.remove('hidden');
+            document.getElementById('suggestionsSection').classList.remove('hidden');
+            document.getElementById('recommendationsSection').classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+            
+            switch(section) {
+                case 'home':
+                    document.getElementById('productsSection').classList.remove('hidden');
+                    document.getElementById('productsTitle').innerHTML = '🔥 Featured';
+                    currentProducts = [...products];
+                    renderProducts(currentProducts, 'productsGrid');
+                    break;
+                case 'new':
+                    document.getElementById('productsSection').classList.remove('hidden');
+                    document.getElementById('productsTitle').innerHTML = '✨ New Arrivals';
+                    currentProducts = [...products].sort((a, b) => new Date(b.date) - new Date(a.date));
+                    renderProducts(currentProducts, 'productsGrid');
+                    break;
+                case 'notebook':
+                    document.getElementById('notebookSection').classList.remove('hidden');
+                    document.getElementById('sponsoredSection').classList.add('hidden');
+                    document.getElementById('heroSection').classList.add('hidden');
+                    document.getElementById('suggestionsSection').classList.add('hidden');
+                    document.getElementById('recommendationsSection').classList.add('hidden');
+                    break;
+                case 'contact':
+                    document.getElementById('contactSection').classList.remove('hidden');
+                    document.getElementById('sponsoredSection').classList.add('hidden');
+                    document.getElementById('heroSection').classList.add('hidden');
+                    document.getElementById('suggestionsSection').classList.add('hidden');
+                    document.getElementById('recommendationsSection').classList.add('hidden');
+                    break;
+            }
+            
+            document.getElementById('mobileNav').classList.remove('active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function toggleMobileMenu() {
+            document.getElementById('mobileNav').classList.toggle('active');
+        }
+
+        /* ============================================
+           FEATURE 17: MODAL MANAGEMENT
+           ============================================ */
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                    document.body.style.overflow = '';
+                }
+            });
+        });
+
+        /* ============================================
+           FEATURE 18: STATS COUNTER
+           ============================================ */
+        function updateStats() {
+            // Animate numbers
+            animateValue('statListings', 0, 1240, 2000);
+            animateValue('statSellers', 0, 856, 2000);
+            animateValue('statCounties', 0, 47, 1500);
+        }
+
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            const range = end - start;
+            const increment = end > start ? 1 : -1;
+            const stepTime = Math.abs(Math.floor(duration / range));
+            let current = start;
+            
+            const timer = setInterval(() => {
+                current += increment * Math.ceil(range / 50);
+                if ((increment > 0 && current >= end) || (increment < 0 && current <= end)) {
+                    current = end;
+                    clearInterval(timer);
+                }
+                obj.textContent = current.toLocaleString();
+            }, stepTime);
+        }
+
+        /* ============================================
+           FEATURE 19: LAZY LOADING
+           ============================================ */
+        function setupLazyLoading() {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.src = img.dataset.src;
+                        img.classList.remove('lazy-image');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            setTimeout(() => {
+                document.querySelectorAll('.lazy-image').forEach(img => {
+                    imageObserver.observe(img);
+                });
+            }, 100);
+        }
+
+        /* ============================================
+           FEATURE 20: UTILITY FUNCTIONS
+           ============================================ */
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffTime = Math.abs(now - date);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            
+            if (diffDays === 1) return 'Yesterday';
+            if (diffDays < 7) return `${diffDays} days ago`;
+            return date.toLocaleDateString('en-KE');
+        }
+
+        function showNotification(message, type = 'success') {
+            const notif = document.getElementById('notification');
+            notif.textContent = message;
+            notif.className = `notification ${type} show`;
+            
+            setTimeout(() => {
+                notif.classList.remove('show');
+            }, 3000);
+        }
+
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // File input handler
+        document.getElementById('evidenceFile')?.addEventListener('change', function(e) {
+            const label = e.target.nextElementSibling;
+            if (e.target.files.length > 0) {
+                label.textContent = `📷 ${e.target.files[0].name}`;
+            }
+        });
+
+        /* ============================================
+           FEATURE 21: OFFLINE SUPPORT (BONUS)
+           ============================================ */
+        window.addEventListener('offline', () => {
+            showNotification('You are offline. Some features unavailable.', 'error');
+        });
+
+        window.addEventListener('online', () => {
+            showNotification('Back online!', 'success');
+        });
+
+        /* ============================================
+           FEATURE 22: KEYBOARD SHORTCUTS (BONUS)
+           ============================================ */
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('active'));
+            }
+            if (e.key === '/' && document.activeElement.tagName !== 'INPUT') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+    </script>
+    <script src="seller/seller.js"></script>
+    <script type="module">
+        // Realtime: subscribe to product inserts and update UI
+        import { subscribeToTable } from '/supabase/api.js';
+
+        if (window.SUPABASE_CONFIG && window.SUPABASE_CONFIG.url) {
+            const sub = subscribeToTable('products', (payload) => {
+                // payload.payload (or payload.record/new) depends on event shape; handle common variants
+                const record = payload.record || payload.new || payload.payload || payload;
+                // Only handle inserts for live listings
+                const event = payload.event || payload.eventType || payload.type;
+                if (String(event).toUpperCase().includes('INSERT')) {
+                    try {
+                        if (typeof createCompactCard === 'function') {
+                            const grid = document.getElementById('productsGrid');
+                            const card = createCompactCard(record);
+                            grid.prepend(card);
+                            showNotification('New product listed!', 'success');
+                        }
+                    } catch (e) {
+                        console.error('Realtime handler error', e);
+                    }
+                }
+            });
+
+            // Optional: store sub on window for debugging/unsubscribe
+            window.__supabase_products_sub = sub;
+        }
+    </script>
+</body>
+</html>

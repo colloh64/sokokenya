@@ -1,0 +1,6 @@
+/* Minimal seller styles to satisfy references and provide base layout */
+:root{--primary:#1a5f2a;--light:#f8f9fa;--dark:#1a1a1a}
+html,body{height:100%;margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+a{color:var(--primary);text-decoration:none}
+.container{max-width:1200px;margin:0 auto;padding:0 12px}
+/* Keep specific seller page styles scoped in the page itself; this file avoids 404s */
